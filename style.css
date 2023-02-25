@@ -47,7 +47,7 @@ h2 {
 #cardPile {
     width: 30vw;
     height: 30vh;
-    background-color: burlywood;
+    background-color: rgb(237, 194, 138);
     display: flex;
     align-items: center;
     justify-content: center;
