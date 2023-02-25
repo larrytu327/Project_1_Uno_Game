@@ -31,6 +31,7 @@
 
 ## Wireframe
 
+- **See attached screenshot in the repo for the wireframe*
 - HTML site will have Player 1 and Player 2 sections
     - Each player's section will reveal their hand/cards when it is their turn and hide their hand during opposing player's turn
 - Navigation bar or special section to the side will include relevant game info:

@@ -1,0 +1,78 @@
+body {
+    height: 100vh;
+}
+
+main {
+    height: 75vh;
+    display: flex;
+}
+
+h1 {
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.2em;
+
+}
+
+#sidebar {
+    background-color: lightcoral;
+    width: 25vw;
+}
+
+#player1Stats {
+    font-size: 1.3em;
+}
+
+#player2Stats {
+    font-size: 1.3em;
+}
+
+#gameStats {
+    font-size: 1.3em;
+}
+
+#gameBoard {
+    font-size: 1.3em;
+    background-color: lightsteelblue;
+    width: 75vw;
+    height: 75vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#cardPile {
+    width: 30vw;
+    height: 30vh;
+    background-color: burlywood;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#player1Hand {
+    width: 50vw;
+    height: 40vh;
+    background-color: lightslategray;
+}
+
+#player2Hand {
+    width: 50vw;
+    height: 40vh;
+    background-color: lightslategray;
+}
+
+.drawCardButton {
+    justify-content: center;
+    align-items: center;
+}
+
+footer {
+    font-size: 1.3em;
+    height: 10vh;
+    background-color: lightseagreen;
+    text-align: center;
+}
