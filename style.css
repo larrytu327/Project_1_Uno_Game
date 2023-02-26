@@ -1,25 +1,37 @@
 body {
-    height: 100vh;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100vw;
+    height: 20vh;
+}
+
+#title {
+    text-align: center;
+    font-size: 1.2em;
+    width: 100vw;
+}
+
+.gameIntro {
+    text-align: center;
+    display: flex;
+    font-size: 1.2em;
+    width: 100vw;
+    align-items: center;
 }
 
 main {
-    height: 75vh;
     display: flex;
+    height: 100vh;
+    width: 100vw;
 }
 
-h1 {
-    text-align: center;
-}
 
-h2 {
-    text-align: center;
-    font-size: 1.2em;
-
-}
 
 #sidebar {
     background-color: lightcoral;
-    width: 25vw;
+    width: 20vw;
+    height: 100vh;
 }
 
 #player1Stats {
@@ -37,16 +49,17 @@ h2 {
 #gameBoard {
     font-size: 1.3em;
     background-color: lightsteelblue;
-    width: 75vw;
-    height: 75vh;
+    width: 83vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
 }
 
 #cardPile {
     width: 30vw;
-    height: 30vh;
+    height: 25vh;
     background-color: rgb(237, 194, 138);
     display: flex;
     align-items: center;
@@ -54,14 +67,15 @@ h2 {
 }
 
 #player1Hand {
-    width: 50vw;
-    height: 40vh;
+    width: 55vw;
+    height: 25vh;
     background-color: lightslategray;
+    margin-top: 5%;
 }
 
 #player2Hand {
-    width: 50vw;
-    height: 40vh;
+    width: 55vw;
+    height: 25vh;
     background-color: lightslategray;
 }
 
@@ -73,6 +87,7 @@ h2 {
 footer {
     font-size: 1.3em;
     height: 10vh;
+    width: 100vw;
     background-color: lightseagreen;
     text-align: center;
 }
