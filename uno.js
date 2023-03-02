@@ -1,3 +1,4 @@
+//Grabbing elements from DOM
 let drawCardInput = document.querySelector(".drawCardButton");
 let startGame = document.querySelector(".startGameButton");
 let unoCall = document.querySelector(".unoButton");
@@ -6,7 +7,9 @@ let player1Cards = document.querySelector("#player1Hand");
 let player2Cards = document.querySelector("#player2Hand");
 let cardPileOutput = document.querySelector("#cardPile");
 let displayDrawCards = document.querySelector(".drawCards");
+let displayDiscardPileCard = document.querySelector(".discardPileCard");
 
+//Establishing the deck of cards with arrays and objects
 const colors = ["Blue", "Red", "Yellow", "Green"];
 const values = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Skip", "Draw 2"];
 const wildCards = ["Wild", "Wild Draw 4"];
@@ -18,6 +21,9 @@ for (let i = 0; i < colors.length; i++) {
     for (let j = 0; j < values.length; j++) {
         let card = {Color: colors[i], Value: values[j]};
         deck.push(card);
+        if (card.Value === "Skip" || card.Value === "Draw 2") {
+            deck.push(card);
+        }
     }
 }
 
@@ -28,6 +34,8 @@ for (let i = 0; i < wildCards.length; i++) {
     }
 }
 
+
+//Functions
 function shuffleDeck() {
     for (let i = deck.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random()*i);
@@ -41,12 +49,8 @@ function drawCard() {
     shuffleDeck();
     let cardBeingDrawn = [];
     cardBeingDrawn = deck[Math.floor(Math.random()*(deck.length))];
-    //displayDrawCards.innerHTML = `${cardDisplayed}`;
-    //console.log(cardDisplayed);
     deck.pop(cardBeingDrawn);
-    //console.log(deck.length);
     return cardBeingDrawn;
-    
 }
 
 function dealCardsAtStart() {
@@ -60,23 +64,24 @@ function dealCardsAtStart() {
     let cardOnDiscardPile = drawCard();
     console.log(deck.length);
     console.log(cardOnDiscardPile);
-    displayDrawCards.innerHTML = `${cardOnDiscardPile}`;
-    checkForMatch(player1Cards, cardOnDiscardPile);
+    displayDiscardPileCard.innerHTML = `${cardOnDiscardPile}`;
 }
 
-function checkForMatch(player1Cards, cardOnDiscardPile) {
-    for (let i = 0; i < player1Cards.length; i++) {
-        if (player1Cards[i].Value === cardOnDiscardPile.Value || player1Cards[i].Color === cardOnDiscardPile.Color) {
-            console.log("There is a match between player1Cards and cardOnDiscardPile");
+function checkForMatch(playerCardsToCheck, cardOnDiscardPile) {
+    for (let i = 0; i < playerCardsToCheck.length; i++) {
+        if (playerCardsToCheck[i].Value === cardOnDiscardPile.Value || playerCardsToCheck[i].Color === cardOnDiscardPile.Color) {
+            console.log("There is a match between playerCardsToCheck and cardOnDiscardPile");
             return true;
         }
-        else if (player1Cards[i].Color === "Wild" || player1Cards[i].Color  === "Wild Draw 4" || cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color  === "Wild Draw 4") {
-            console.log("There is a match between player1Cards and cardOnDiscardPile");
+        else if (playerCardsToCheck[i].Color === "Wild" || playerCardsToCheck[i].Color  === "Wild Draw 4" || cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color  === "Wild Draw 4") {
+            console.log("There is a match between playerCardsToCheck and cardOnDiscardPile");
             return true;
         }
     }
-    console.log("There is no match between player1Cards and cardOnDiscardPile");
+    console.log("There is no match between playerCardsToCheck and cardOnDiscardPile");
+    return false;
 }
 
+//Event Listeners
 drawCardInput.addEventListener("click", drawCard);
 startGame.addEventListener("click", dealCardsAtStart);

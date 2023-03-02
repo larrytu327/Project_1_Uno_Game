@@ -71,7 +71,7 @@ main {
     height: 22vh;
     background-color: rgb(237, 194, 138);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: space-around;
     margin: auto;
@@ -80,6 +80,7 @@ main {
 #player1Hand {
     width: 75vw;
     height: 20vh;
+    display: flex;
     background-color: lightslategray;
     margin: auto;
     flex-direction: row;
@@ -90,6 +91,7 @@ main {
 #player2Hand {
     width: 75vw;
     height: 20vh;
+    display: flex;
     background-color: lightslategray;
     margin: auto;
     flex-direction: row;
@@ -97,8 +99,19 @@ main {
     justify-content: space-around;
 }
 
-.drawCardButton {
+.cards {
+    width: 7vw;
+    height: 16vh;
+    background-color: lightgreen;
+    margin: auto;
+}
 
+.discardPileCard {
+    background-color: lightcyan;
+}
+
+.drawCardButton {
+    margin: auto;
 }
 
 #gamePrompts {
@@ -110,5 +123,5 @@ main {
 }
 
 .colors {
-    
+
 }
