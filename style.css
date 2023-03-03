@@ -99,7 +99,14 @@ main {
     justify-content: space-around;
 }
 
-.cards {
+.cardsPlayer1 {
+    width: 7vw;
+    height: 16vh;
+    background-color: lightgreen;
+    margin: auto;
+}
+
+.cardsPlayer2 {
     width: 7vw;
     height: 16vh;
     background-color: lightgreen;

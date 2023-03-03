@@ -2,12 +2,15 @@
 let drawCardInput = document.querySelector(".drawCardButton");
 let startGame = document.querySelector(".startGameButton");
 let unoCall = document.querySelector(".unoButton");
-let endTurn = document.querySelector("endTurnButton");
-let player1Cards = document.querySelector("#player1Hand");
-let player2Cards = document.querySelector("#player2Hand");
+let endTurn = document.querySelector(".endTurnButton");
+let player1CardsInHand = document.querySelector("#player1Hand");
+let player2CardsInHand = document.querySelector("#player2Hand");
 let cardPileOutput = document.querySelector("#cardPile");
 let displayDrawCards = document.querySelector(".drawCards");
 let displayDiscardPileCard = document.querySelector(".discardPileCard");
+let allPlayer1CardSlots = document.querySelectorAll(".cardsPlayer1");
+let allPlayer2CardSlots = document.querySelectorAll
+(".cardsPlayer2");
 
 //Establishing the deck of cards with arrays and objects
 const colors = ["Blue", "Red", "Yellow", "Green"];
@@ -29,7 +32,7 @@ for (let i = 0; i < colors.length; i++) {
 
 for (let i = 0; i < wildCards.length; i++) {
     for (let j = 0; j < 4; j++) {
-        let card = {Color: wildCards[i], Value: ""};
+        let card = {Color: wildCards[i], Value: "N/A"};
         deck.push(card);
     }
 }
@@ -54,34 +57,77 @@ function drawCard() {
 }
 
 function dealCardsAtStart() {
+    console.log(deck.length);
     let player1Cards = [];
     let player2Cards = [];
-    for (let j = 0; j < 7; j++) {
-        player1Cards[j] = drawCard();
-        player2Cards[j] = drawCard();
-        console.log(player1Cards[j]);
-    }
     let cardOnDiscardPile = drawCard();
+    displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+    console.log(`Discard Pile Card, Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`);
+    for (let i = 0; i < 7; i++) {
+        player1Cards[i] = drawCard();
+        player2Cards[i] = drawCard();
+        addCardsToPlayer1(player1Cards[i]);
+        addCardsToPlayer2(player2Cards[i]);
+        console.log(`Player 1 Card# ${i+1}, Color: ${player1Cards[i].Color} Value: ${player1Cards[i].Value}`);
+        checkForMatch(player1Cards[i], cardOnDiscardPile);
+        console.log(`Player 2 Card# ${i+1}, Color: ${player2Cards[i].Color} Value: ${player2Cards[i].Value}`);
+        checkForMatch(player2Cards[i], cardOnDiscardPile);
+    }
     console.log(deck.length);
-    console.log(cardOnDiscardPile);
-    displayDiscardPileCard.innerHTML = `${cardOnDiscardPile}`;
+    // console.log(`allPlayer1CardSlots .length is: ${allPlayer1CardSlots.length}`);
+}
+
+function addCardsToPlayer1(player1Cards) {
+    let newCardOnPlayer1Board = document.createElement("div");
+    newCardOnPlayer1Board.innerHTML = `Color: ${player1Cards.Color} Value: ${player1Cards.Value}`;
+    newCardOnPlayer1Board.classList.add("cardsPlayer1");
+    player1CardsInHand.appendChild(newCardOnPlayer1Board);
+}
+
+function addCardsToPlayer2(player2Cards) {
+    let newCardOnPlayer2Board = document.createElement("div");
+    newCardOnPlayer2Board.innerHTML = `Color: ${player2Cards.Color} Value: ${player2Cards.Value}`;
+    newCardOnPlayer2Board.classList.add("cardsPlayer2");
+    player2CardsInHand.appendChild(newCardOnPlayer2Board);
 }
 
 function checkForMatch(playerCardsToCheck, cardOnDiscardPile) {
-    for (let i = 0; i < playerCardsToCheck.length; i++) {
-        if (playerCardsToCheck[i].Value === cardOnDiscardPile.Value || playerCardsToCheck[i].Color === cardOnDiscardPile.Color) {
-            console.log("There is a match between playerCardsToCheck and cardOnDiscardPile");
-            return true;
-        }
-        else if (playerCardsToCheck[i].Color === "Wild" || playerCardsToCheck[i].Color  === "Wild Draw 4" || cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color  === "Wild Draw 4") {
-            console.log("There is a match between playerCardsToCheck and cardOnDiscardPile");
-            return true;
-        }
+    if (playerCardsToCheck.Value === cardOnDiscardPile.Value || playerCardsToCheck.Color === cardOnDiscardPile.Color) {
+        console.log("There is a Match with Discard Pile");
+        return true;
     }
-    console.log("There is no match between playerCardsToCheck and cardOnDiscardPile");
+    else if (playerCardsToCheck.Color === "Wild" || playerCardsToCheck.Color  === "Wild Draw 4" || cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color  === "Wild Draw 4") {
+        console.log("There is a Match with Discard Pile");
+        return true;
+    }
+    console.log("Not a Match with Discard Pile");
     return false;
 }
+
+
+// function checkForMatch(playerCardsToCheck, cardOnDiscardPile) {
+//     for (let i = 0; i < playerCardsToCheck.length; i++) {
+//         if (playerCardsToCheck[i].Value === cardOnDiscardPile.Value || playerCardsToCheck[i].Color === cardOnDiscardPile.Color) {
+//             console.log("There is a match between playerCardsToCheck and cardOnDiscardPile");
+//             return true;
+//         }
+//         else if (playerCardsToCheck[i].Color === "Wild" || playerCardsToCheck[i].Color  === "Wild Draw 4" || cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color  === "Wild Draw 4") {
+//             console.log("There is a match between playerCardsToCheck and cardOnDiscardPile");
+//             return true;
+//         }
+//     }
+//     console.log("There is no match between playerCardsToCheck and cardOnDiscardPile");
+//     return false;
+// }
 
 //Event Listeners
 drawCardInput.addEventListener("click", drawCard);
 startGame.addEventListener("click", dealCardsAtStart);
+
+//Event listener for every card slot for each player
+// for (let i = 0; i<allPlayer1CardSlots.length; i++) {
+//     allPlayer1CardSlots[i].addEventListener("click", checkForMatch);
+//     }
+// for (let i = 0; i<allPlayer2CardSlots.length; i++) {
+//     allPlayer2CardSlots[i].addEventListener("click", dealCardsAtStart);
+//     }
