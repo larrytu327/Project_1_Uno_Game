@@ -8,9 +8,9 @@ let player2CardsInHand = document.querySelector("#player2Hand");
 let cardPileOutput = document.querySelector("#cardPile");
 let displayDrawCards = document.querySelector(".drawCards");
 let displayDiscardPileCard = document.querySelector(".discardPileCard");
-let allPlayer1CardSlots = document.querySelectorAll(".cardsPlayer1");
-let allPlayer2CardSlots = document.querySelectorAll
-(".cardsPlayer2");
+let allPlayer1CardSlots = document.getElementsByClassName("cardsPlayer1");
+let allPlayer2CardSlots = document.getElementsByClassName
+("cardsPlayer2");
 
 //Establishing the deck of cards with arrays and objects
 const colors = ["Blue", "Red", "Yellow", "Green"];
@@ -69,17 +69,27 @@ function dealCardsAtStart() {
         addCardsToPlayer1(player1Cards[i]);
         addCardsToPlayer2(player2Cards[i]);
         console.log(`Player 1 Card# ${i+1}, Color: ${player1Cards[i].Color} Value: ${player1Cards[i].Value}`);
-        checkForMatch(player1Cards[i], cardOnDiscardPile);
+        // checkForMatch(player1Cards[i], cardOnDiscardPile);
         console.log(`Player 2 Card# ${i+1}, Color: ${player2Cards[i].Color} Value: ${player2Cards[i].Value}`);
-        checkForMatch(player2Cards[i], cardOnDiscardPile);
+        // checkForMatch(player2Cards[i], cardOnDiscardPile);
     }
     console.log(deck.length);
-    // console.log(`allPlayer1CardSlots .length is: ${allPlayer1CardSlots.length}`);
+    console.log(`allPlayer1CardSlots .length is: ${allPlayer1CardSlots.length}`);
+    for (let j = 0; j<allPlayer1CardSlots.length; j++) {
+        // console.log(allPlayer1CardSlots[j]);
+        // console.log(typeof allPlayer1CardSlots[j]);
+        // console.log(typeof cardOnDiscardPile);
+        // console.log(cardOnDiscardPile);
+        // console.log(allPlayer1CardSlots[j].value);   
+        allPlayer1CardSlots[j].addEventListener("click", () => checkForMatch(allPlayer1CardSlots[j].value,cardOnDiscardPile));
+        allPlayer2CardSlots[j].addEventListener("click", () => checkForMatch(allPlayer2CardSlots[j].value,cardOnDiscardPile));
+    }
 }
 
 function addCardsToPlayer1(player1Cards) {
     let newCardOnPlayer1Board = document.createElement("div");
     newCardOnPlayer1Board.innerHTML = `Color: ${player1Cards.Color} Value: ${player1Cards.Value}`;
+    newCardOnPlayer1Board.value = player1Cards;
     newCardOnPlayer1Board.classList.add("cardsPlayer1");
     player1CardsInHand.appendChild(newCardOnPlayer1Board);
 }
@@ -87,6 +97,7 @@ function addCardsToPlayer1(player1Cards) {
 function addCardsToPlayer2(player2Cards) {
     let newCardOnPlayer2Board = document.createElement("div");
     newCardOnPlayer2Board.innerHTML = `Color: ${player2Cards.Color} Value: ${player2Cards.Value}`;
+    newCardOnPlayer2Board.value = player2Cards;
     newCardOnPlayer2Board.classList.add("cardsPlayer2");
     player2CardsInHand.appendChild(newCardOnPlayer2Board);
 }
@@ -124,10 +135,12 @@ function checkForMatch(playerCardsToCheck, cardOnDiscardPile) {
 drawCardInput.addEventListener("click", drawCard);
 startGame.addEventListener("click", dealCardsAtStart);
 
+console.log(allPlayer1CardSlots);
 //Event listener for every card slot for each player
-// for (let i = 0; i<allPlayer1CardSlots.length; i++) {
-//     allPlayer1CardSlots[i].addEventListener("click", checkForMatch);
+
+// document.addEventListener("DOMContentLoaded", function() {
+//     let allPlayer1CardSlots = document.getElementsByClassName("cardsPlayer1");
+//     for (let i = 0; i < allPlayer1CardSlots.length; i++) {
+//         allPlayer1CardSlots[i].addEventListener("click",drawCard);
 //     }
-// for (let i = 0; i<allPlayer2CardSlots.length; i++) {
-//     allPlayer2CardSlots[i].addEventListener("click", dealCardsAtStart);
-//     }
+// })
