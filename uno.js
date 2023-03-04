@@ -12,6 +12,9 @@ let displayDiscardPileCard = document.querySelector(".discardPileCard");
 let allPlayer1CardSlots = document.getElementsByClassName("cardsPlayer1");
 let allPlayer2CardSlots = document.getElementsByClassName
 ("cardsPlayer2");
+let gamePromptSection = document.querySelector("#gamePrompts");
+let player1Stats = document.querySelector("#player1Stats");
+let player2Stats = document.querySelector("#player2Stats");
 
 let player1Cards = [];
 let player2Cards = [];
@@ -20,6 +23,9 @@ let player1Display = false;
 let player2Display = false;
 let player1Turn = false;
 let player2Turn = true;
+let cardCounterPlayer1 = 0;
+let cardCounterPlayer2 = 0;
+
 
 
 //Establishing the deck of cards with arrays and objects
@@ -126,6 +132,11 @@ function addCardToPlayer1(player1Card, cardOnDiscardPile) {
     player1CardsInHand.appendChild(newCardOnPlayer1Board);
     //Event Listeners for new cards added to the player's hand 
     newCardOnPlayer1Board.addEventListener("click", () => checkForMatch(newCardOnPlayer1Board.value,cardOnDiscardPile));
+    // console.log(newCardOnPlayer1Board);
+    // player1Stats.innerHTML = `Player 1 has ${(newCardOnPlayer1Board.length-1)} cards in their hand`;
+    cardCounterPlayer1++;
+    console.log(cardCounterPlayer1);
+    player1Stats.innerHTML = `Player 1 has ${cardCounterPlayer1} cards in their hand`;
     return;
 }
 
@@ -137,6 +148,11 @@ function addCardToPlayer2(player2Card, cardOnDiscardPile) {
     player2CardsInHand.appendChild(newCardOnPlayer2Board);
     //Event Listeners for new cards added to the player's hand 
     newCardOnPlayer2Board.addEventListener("click", () => checkForMatch(newCardOnPlayer2Board.value,cardOnDiscardPile));
+    // console.log(newCardOnPlayer2Board);
+    // player2Stats.innerHTML = `Player 2 has ${(newCardOnPlayer2Board.length-1)} cards in their hand`;
+    cardCounterPlayer2++;
+    console.log(cardCounterPlayer2);
+    player2Stats.innerHTML = `Player 2 has ${cardCounterPlayer2} cards in their hand`;
     return;
 }
 
@@ -159,12 +175,20 @@ function endTurn() {
     setDisplay(player1Display, player2Display);
     if (player1Turn === true) {
         console.log("Player 2, click on start turn");
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Player 2, click on "Start Turn" button to reveal your cards and start your turn`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
         player1Turn = false;
         player2Turn = true;
         return;
     }
     else if (player2Turn === true) {
         console.log("Player 1, click on start turn");
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Player 1, click on "Start Turn" button to reveal your cards and start your turn`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
         player1Turn = true;
         player2Turn = false;
         return;
@@ -179,6 +203,8 @@ function startTurn() {
         player1Display = false;
         player2Display = true;
     }
+    //removed the game prompts by class after clicking start turn button
+    document.querySelector(".newGamePrompt").remove();
     setDisplay(player1Display, player2Display);
     return;
 }
