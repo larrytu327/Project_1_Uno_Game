@@ -23,8 +23,6 @@ let player1Display = false;
 let player2Display = false;
 let player1Turn = false;
 let player2Turn = true;
-let cardCounterPlayer1 = 0;
-let cardCounterPlayer2 = 0;
 let cardOnDiscardPile = [];
 
 
@@ -132,10 +130,8 @@ function addCardToPlayer1(player1Card, cardOnDiscardPile) {
     player1CardsInHand.appendChild(newCardOnPlayer1Board);
     //Event Listener for new cards added to the player's hand 
     // newCardOnPlayer1Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer1Board.value,cardOnDiscardPile));
-    newCardOnPlayer1Board.addEventListener("click", () => discardCard(newCardOnPlayer1Board.value,cardOnDiscardPile, player1CardsInHand));
-    cardCounterPlayer1++;
-    console.log(cardCounterPlayer1);
-    player1Stats.innerHTML = `Player 1 has ${cardCounterPlayer1} cards in their hand`;
+    newCardOnPlayer1Board.addEventListener("click", () => discardCard(newCardOnPlayer1Board.value,cardOnDiscardPile, player1Cards));
+    player1Stats.innerHTML = `Player 1 has ${player1Cards.length} cards in their hand`;
     return;
 }
 
@@ -147,10 +143,8 @@ function addCardToPlayer2(player2Card, cardOnDiscardPile) {
     player2CardsInHand.appendChild(newCardOnPlayer2Board);
     //Event Listener for new cards added to the player's hand 
     // newCardOnPlayer2Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer2Board.value,cardOnDiscardPile));
-    newCardOnPlayer2Board.addEventListener("click", () => discardCard(newCardOnPlayer2Board.value,cardOnDiscardPile, player2CardsInHand));
-    cardCounterPlayer2++;
-    console.log(cardCounterPlayer2);
-    player2Stats.innerHTML = `Player 2 has ${cardCounterPlayer2} cards in their hand`;
+    newCardOnPlayer2Board.addEventListener("click", () => discardCard(newCardOnPlayer2Board.value,cardOnDiscardPile, player2Cards));
+    player2Stats.innerHTML = `Player 2 has ${player2Cards.length} cards in their hand`;
     return;
 }
 
@@ -209,17 +203,26 @@ function startTurn() {
     return;
 }
 
-function discardCard(playerCardToCheck, cardOnDiscardPile, playerCardsInHand) {
+function discardCard(playerCardToCheck, cardOnDiscardPile, playerCards) {
     if (checkForMatch(playerCardToCheck, cardOnDiscardPile) === true) {
         //remove the card from player's hand, replace the cardOnDiscardPile with that card
         cardOnDiscardPile = playerCardToCheck;
-        displayDiscardPileCard.innerHTML = `Color: ${playerCardToCheck.Color} Value: ${playerCardToCheck.Value}`;
-        // playerCardsInHand.removeChild(playerCardToCheck);
+        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        for (let i = 0; i < playerCards.length; i++) {
+            if (playerCards[i] === playerCardToCheck) {
+                playerCards.splice(i, 1);
+            }
+        }
+        //Need to figure out how to remove the card, remove the element/div
+        // playerCardToCheck.remove();
+        console.log(playerCards.length);
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `The card you selected matches what's on the discard pile!`;
         gamePromptSection.appendChild(newGamePrompt);
-        newGamePrompt.classList.add("newGamePrompt");
+        newGamePrompt.classList.add("newGamePrompt");    
+        player1Stats.innerHTML = `Player 1 has ${player1Cards.length} cards in their hand`;
+        player2Stats.innerHTML = `Player 2 has ${player2Cards.length} cards in their hand`;
     }
     else if (checkForMatch(playerCardToCheck, cardOnDiscardPile) === false) {
         document.querySelector(".newGamePrompt").remove();
@@ -239,8 +242,10 @@ function addCardToHand() {
         player2Cards.push(drawCard());
         addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
     }
-    console.log(player1Cards.length);
-    console.log(player2Cards.length);
+}
+
+function unoChecker() {
+//if the unoChecker goes through and the player calls it and their hand only has one card left, print in Game prompt "One card left!" If the uno checker goes through but the person calling does not have one card left, add four cards and print game prompt "There was a mistake! Four cards added as a penalty!"
 }
 
 // function checkForMatch(playerCardsToCheck, cardOnDiscardPile) {
