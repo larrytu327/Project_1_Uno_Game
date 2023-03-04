@@ -25,7 +25,7 @@ let player1Turn = false;
 let player2Turn = true;
 let cardCounterPlayer1 = 0;
 let cardCounterPlayer2 = 0;
-
+let cardOnDiscardPile = [];
 
 
 //Establishing the deck of cards with arrays and objects
@@ -103,14 +103,14 @@ function drawCard() {
 
 function dealCardsAtStart() {
     console.log(deck.length);
-    let cardOnDiscardPile = drawCard();
+    cardOnDiscardPile = drawCard();
     displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
     console.log(`Discard Pile Card, Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`);
     for (let i = 0; i < 7; i++) {
         player1Cards[i] = drawCard();
         player2Cards[i] = drawCard();
-        addCardToPlayer1(player1Cards[i], cardOnDiscardPile);
-        addCardToPlayer2(player2Cards[i], cardOnDiscardPile);
+        addCardToPlayer1(player1Cards[i], cardOnDiscardPile, player1Cards);
+        addCardToPlayer2(player2Cards[i], cardOnDiscardPile, player2Cards);
         console.log(`Player 1 Card# ${i+1}, Color: ${player1Cards[i].Color} Value: ${player1Cards[i].Value}`);
         console.log(`Player 2 Card# ${i+1}, Color: ${player2Cards[i].Color} Value: ${player2Cards[i].Value}`);
     }
@@ -130,10 +130,9 @@ function addCardToPlayer1(player1Card, cardOnDiscardPile) {
     newCardOnPlayer1Board.value = player1Card;
     newCardOnPlayer1Board.classList.add("cardsPlayer1");
     player1CardsInHand.appendChild(newCardOnPlayer1Board);
-    //Event Listeners for new cards added to the player's hand 
-    newCardOnPlayer1Board.addEventListener("click", () => checkForMatch(newCardOnPlayer1Board.value,cardOnDiscardPile));
-    // console.log(newCardOnPlayer1Board);
-    // player1Stats.innerHTML = `Player 1 has ${(newCardOnPlayer1Board.length-1)} cards in their hand`;
+    //Event Listener for new cards added to the player's hand 
+    // newCardOnPlayer1Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer1Board.value,cardOnDiscardPile));
+    newCardOnPlayer1Board.addEventListener("click", () => discardCard(newCardOnPlayer1Board.value,cardOnDiscardPile, player1CardsInHand));
     cardCounterPlayer1++;
     console.log(cardCounterPlayer1);
     player1Stats.innerHTML = `Player 1 has ${cardCounterPlayer1} cards in their hand`;
@@ -146,10 +145,9 @@ function addCardToPlayer2(player2Card, cardOnDiscardPile) {
     newCardOnPlayer2Board.value = player2Card;
     newCardOnPlayer2Board.classList.add("cardsPlayer2");
     player2CardsInHand.appendChild(newCardOnPlayer2Board);
-    //Event Listeners for new cards added to the player's hand 
-    newCardOnPlayer2Board.addEventListener("click", () => checkForMatch(newCardOnPlayer2Board.value,cardOnDiscardPile));
-    // console.log(newCardOnPlayer2Board);
-    // player2Stats.innerHTML = `Player 2 has ${(newCardOnPlayer2Board.length-1)} cards in their hand`;
+    //Event Listener for new cards added to the player's hand 
+    // newCardOnPlayer2Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer2Board.value,cardOnDiscardPile));
+    newCardOnPlayer2Board.addEventListener("click", () => discardCard(newCardOnPlayer2Board.value,cardOnDiscardPile, player2CardsInHand));
     cardCounterPlayer2++;
     console.log(cardCounterPlayer2);
     player2Stats.innerHTML = `Player 2 has ${cardCounterPlayer2} cards in their hand`;
@@ -199,14 +197,50 @@ function startTurn() {
     if (player1Turn === true && player2Turn === false) {
         player1Display = true;
         player2Display = false;
+        currentPlayer = player1Cards;
     } else if (player1Turn === false && player2Turn === true) {
         player1Display = false;
         player2Display = true;
+        currentPlayer = player2Cards;
     }
     //removed the game prompts by class after clicking start turn button
     document.querySelector(".newGamePrompt").remove();
     setDisplay(player1Display, player2Display);
     return;
+}
+
+function discardCard(playerCardToCheck, cardOnDiscardPile, playerCardsInHand) {
+    if (checkForMatch(playerCardToCheck, cardOnDiscardPile) === true) {
+        //remove the card from player's hand, replace the cardOnDiscardPile with that card
+        cardOnDiscardPile = playerCardToCheck;
+        displayDiscardPileCard.innerHTML = `Color: ${playerCardToCheck.Color} Value: ${playerCardToCheck.Value}`;
+        // playerCardsInHand.removeChild(playerCardToCheck);
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `The card you selected matches what's on the discard pile!`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+    }
+    else if (checkForMatch(playerCardToCheck, cardOnDiscardPile) === false) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `The card you selected does not match what's on the discard pile; select another card from your hand or draw a card from the card deck.`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+    }
+}
+
+function addCardToHand() {
+    if (player1Turn === true && player2Turn === false) {
+        player1Cards.push(drawCard());
+        addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
+    }
+    else if (player1Turn === false && player2Turn === true) {
+        player2Cards.push(drawCard());
+        addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
+    }
+    console.log(player1Cards.length);
+    console.log(player2Cards.length);
 }
 
 // function checkForMatch(playerCardsToCheck, cardOnDiscardPile) {
@@ -225,7 +259,7 @@ function startTurn() {
 // }
 
 //Event Listeners
-drawCardInput.addEventListener("click", drawCard);
+drawCardInput.addEventListener("click", addCardToHand);
 startGame.addEventListener("click", dealCardsAtStart);
 endTurnBtn.addEventListener("click", endTurn);
 startTurnBtn.addEventListener("click", startTurn);
