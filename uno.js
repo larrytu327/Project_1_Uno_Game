@@ -2,6 +2,7 @@
 let drawCardInput = document.querySelector(".deckCards");
 let startGame = document.querySelector(".startGameButton");
 let unoCall = document.querySelector(".unoButton");
+let startTurnBtn = document.querySelector(".startTurnButton");
 let endTurnBtn = document.querySelector(".endTurnButton");
 let player1CardsInHand = document.querySelector("#player1Hand");
 let player2CardsInHand = document.querySelector("#player2Hand");
@@ -15,8 +16,10 @@ let allPlayer2CardSlots = document.getElementsByClassName
 let player1Cards = [];
 let player2Cards = [];
 let currentPlayer = [];
-let player1 = false;
-let player2 = false;
+let player1Display = false;
+let player2Display = false;
+let player1Turn = false;
+let player2Turn = true;
 
 
 //Establishing the deck of cards with arrays and objects
@@ -46,17 +49,29 @@ for (let i = 0; i < wildCards.length; i++) {
 
 
 //Functions
-function setDisplay(player1, player2) {
-    if (player1 === true) {
+function setDisplay(player1Display, player2Display) {
+    if (player1Display === true && player2Display === false) {
         for (let i = 0; i<allPlayer1CardSlots.length; i++) {
             allPlayer1CardSlots[i].style.display = "flex";
-            allPlayer2CardSlots[i].style.display = "none";
+        }
+        for (let j = 0; j<allPlayer2CardSlots.length; j++) {
+            allPlayer2CardSlots[j].style.display = "none";
         }
         return;
-    } else if (player2 === true) {
-        for (let i = 0; i<allPlayer1CardSlots.length; i++) {
+    } else if (player2Display === true && player1Display === false) {
+        for (let i = 0; i<allPlayer2CardSlots.length; i++) {
             allPlayer2CardSlots[i].style.display = "flex";
+        }
+        for (let j = 0; j<allPlayer1CardSlots.length; j++) {
+            allPlayer1CardSlots[j].style.display = "none";
+        }
+        return;
+    } else if (player1Display === false && player2Display === false) {
+        for (let i = 0; i<allPlayer1CardSlots.length; i++) {
             allPlayer1CardSlots[i].style.display = "none";
+        }
+        for (let j = 0; j<allPlayer2CardSlots.length; j++) {
+            allPlayer2CardSlots[j].style.display = "none";
         }
         return;
     }
@@ -96,9 +111,11 @@ function dealCardsAtStart() {
     // console.log(deck.length);
     // console.log(`allPlayer1CardSlots .length is: ${allPlayer1CardSlots.length}`);
     currentPlayer = player1Cards;
-    player1 = true;
-    player2 = false;
-    setDisplay(player1, player2);
+    player1Display = true;
+    player2Display = false;
+    setDisplay(player1Display, player2Display);
+    player1Turn = true;
+    player2Turn = false;
 }
 
 function addCardToPlayer1(player1Card, cardOnDiscardPile) {
@@ -137,12 +154,33 @@ function checkForMatch(playerCardToCheck, cardOnDiscardPile) {
 }
 
 function endTurn() {
-    console.log(player1);
-    console.log(player2);
-    let temp = player2;
-    player2 = player1;
-    player1 = temp;
-    setDisplay(player1, player2);
+    player1Display = false;
+    player2Display = false;
+    setDisplay(player1Display, player2Display);
+    if (player1Turn === true) {
+        console.log("Player 2, click on start turn");
+        player1Turn = false;
+        player2Turn = true;
+        return;
+    }
+    else if (player2Turn === true) {
+        console.log("Player 1, click on start turn");
+        player1Turn = true;
+        player2Turn = false;
+        return;
+    }
+}
+
+function startTurn() {
+    if (player1Turn === true && player2Turn === false) {
+        player1Display = true;
+        player2Display = false;
+    } else if (player1Turn === false && player2Turn === true) {
+        player1Display = false;
+        player2Display = true;
+    }
+    setDisplay(player1Display, player2Display);
+    return;
 }
 
 // function checkForMatch(playerCardsToCheck, cardOnDiscardPile) {
@@ -164,3 +202,4 @@ function endTurn() {
 drawCardInput.addEventListener("click", drawCard);
 startGame.addEventListener("click", dealCardsAtStart);
 endTurnBtn.addEventListener("click", endTurn);
+startTurnBtn.addEventListener("click", startTurn);
