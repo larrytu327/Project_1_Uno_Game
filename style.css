@@ -104,6 +104,7 @@ main {
     height: 16vh;
     background-color: lightgreen;
     margin: auto;
+    display: flex;
 }
 
 .cardsPlayer2 {
@@ -111,15 +112,34 @@ main {
     height: 16vh;
     background-color: lightgreen;
     margin: auto;
+    display: flex;
+}
+
+.cards {
+    width: 7vw;
+    height: 16vh;
+    background-color: lightcyan;
+    margin: auto;
+    align-items: left;
+    justify-content: space-around;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 
 .discardPileCard {
-    background-color: lightcyan;
+
 }
 
-.drawCardButton {
-    margin: auto;
+.deckCards {
+
 }
+
+/* .cardCover {
+    width: 75vw;
+    height: 20vh;
+    background-color: red;
+} */
 
 #gamePrompts {
     font-size: 1.1em;
