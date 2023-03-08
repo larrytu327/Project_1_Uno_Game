@@ -16,6 +16,7 @@ let gamePromptSection = document.querySelector("#gamePrompts");
 let player1Stats = document.querySelector("#player1Stats");
 let player2Stats = document.querySelector("#player2Stats");
 
+
 let player1Cards = [];
 let player2Cards = [];
 let currentPlayer = [];
@@ -120,6 +121,7 @@ function dealCardsAtStart() {
     setDisplay(player1Display, player2Display);
     player1Turn = true;
     player2Turn = false;
+    console.log(cardOnDiscardPile);
 }
 
 function addCardToPlayer1(player1Card, cardOnDiscardPile) {
@@ -128,9 +130,10 @@ function addCardToPlayer1(player1Card, cardOnDiscardPile) {
     newCardOnPlayer1Board.value = player1Card;
     newCardOnPlayer1Board.classList.add("cardsPlayer1");
     player1CardsInHand.appendChild(newCardOnPlayer1Board);
+    console.log(cardOnDiscardPile);    
     //Event Listener for new cards added to the player's hand 
     // newCardOnPlayer1Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer1Board.value,cardOnDiscardPile));
-    newCardOnPlayer1Board.addEventListener("click", () => discardCard(newCardOnPlayer1Board.value,cardOnDiscardPile, player1Cards));
+    newCardOnPlayer1Board.addEventListener("click", () => discardCard(newCardOnPlayer1Board.value, player1Cards, player1Turn, player2Turn));
     player1Stats.innerHTML = `Player 1 has ${player1Cards.length} cards in their hand`;
     return;
 }
@@ -141,14 +144,16 @@ function addCardToPlayer2(player2Card, cardOnDiscardPile) {
     newCardOnPlayer2Board.value = player2Card;
     newCardOnPlayer2Board.classList.add("cardsPlayer2");
     player2CardsInHand.appendChild(newCardOnPlayer2Board);
+    console.log(cardOnDiscardPile);    
     //Event Listener for new cards added to the player's hand 
     // newCardOnPlayer2Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer2Board.value,cardOnDiscardPile));
-    newCardOnPlayer2Board.addEventListener("click", () => discardCard(newCardOnPlayer2Board.value,cardOnDiscardPile, player2Cards));
+    newCardOnPlayer2Board.addEventListener("click", () => discardCard(newCardOnPlayer2Board.value, player2Cards, player1Turn, player2Turn));
     player2Stats.innerHTML = `Player 2 has ${player2Cards.length} cards in their hand`;
     return;
 }
 
 function endTurn() {
+    console.log(cardOnDiscardPile);
     player1Display = false;
     player2Display = false;
     setDisplay(player1Display, player2Display);
@@ -175,6 +180,7 @@ function endTurn() {
 }
 
 function startTurn() {
+    console.log(cardOnDiscardPile);
     if (player1Turn === true && player2Turn === false) {
         player1Display = true;
         player2Display = false;
@@ -191,6 +197,8 @@ function startTurn() {
 }
 
 function checkForMatch(playerCardToCheck, cardOnDiscardPile) {
+    console.log(playerCardToCheck);
+    console.log(cardOnDiscardPile);
     if (playerCardToCheck.Value === cardOnDiscardPile.Value || playerCardToCheck.Color === cardOnDiscardPile.Color) {
         console.log("There is a Match with Discard Pile");
         return true;
@@ -203,18 +211,29 @@ function checkForMatch(playerCardToCheck, cardOnDiscardPile) {
     return false;
 }
 
-function discardCard(playerCardToCheck, cardOnDiscardPile, playerCards) {
+function discardCard(playerCardToCheck, playerCards, player1Turn, player2Turn) {
+    console.log(cardOnDiscardPile);
     if (checkForMatch(playerCardToCheck, cardOnDiscardPile) === true) {
         cardOnDiscardPile = playerCardToCheck;
+        console.log(cardOnDiscardPile);
         displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
         for (let i = 0; i < playerCards.length; i++) {
             if (playerCards[i] === playerCardToCheck) {
                 playerCards.splice(i, 1);
             }
         }
-        for (let j = 0; j < player1CardsInHand.children.length; j++) {
-            if (playerCardToCheck === player1CardsInHand.children[j].value) {
-                player1CardsInHand.children[j].remove();
+        if (player1Turn === true && player2Turn === false) {
+            for (let i = 0; i < player1CardsInHand.children.length; i++) {
+                if (playerCardToCheck === player1CardsInHand.children[i].value) {
+                    player1CardsInHand.children[i].remove();
+                }
+            }
+        }
+        if (player1Turn === false && player2Turn === true) {
+            for (let i = 0; i < player2CardsInHand.children.length; i++) {
+                if (playerCardToCheck === player2CardsInHand.children[i].value) {
+                    player2CardsInHand.children[i].remove();
+                }
             }
         }
         document.querySelector(".newGamePrompt").remove();
@@ -226,8 +245,13 @@ function discardCard(playerCardToCheck, cardOnDiscardPile, playerCards) {
         player2Stats.innerHTML = `Player 2 has ${player2Cards.length} cards in their hand`;
         draw2Discarded(playerCardToCheck, cardOnDiscardPile);
         wildCardDiscarded(playerCardToCheck, cardOnDiscardPile);
+        console.log(cardOnDiscardPile);
         wildCardDraw4Discarded(playerCardToCheck, cardOnDiscardPile);
+        console.log(cardOnDiscardPile);
         skipDiscarded(playerCardToCheck, cardOnDiscardPile);
+        console.log(cardOnDiscardPile);
+        endTurn();
+        return cardOnDiscardPile;
     }
     else if (checkForMatch(playerCardToCheck, cardOnDiscardPile) === false) {
         document.querySelector(".newGamePrompt").remove();
@@ -244,9 +268,7 @@ function draw2Discarded(playerCardToCheck, cardOnDiscardPile) {
             player2Cards.push(drawCard());
             addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
         }
-        for (let i = 0; i<allPlayer2CardSlots.length; i++) {
-            allPlayer2CardSlots[i].style.display = "none";
-        }
+        setDisplay(true, false);
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Draw 2 was discarded! Opposing player draws 2 cards to their hand.`;
@@ -259,9 +281,7 @@ function draw2Discarded(playerCardToCheck, cardOnDiscardPile) {
             player1Cards.push(drawCard());
             addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
         }
-        for (let i = 0; i<allPlayer1CardSlots.length; i++) {
-            allPlayer1CardSlots[i].style.display = "none";
-        }
+        setDisplay(false,true);
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Draw 2 was discarded! Opposing player draws 2 cards to their hand.`;
@@ -271,27 +291,152 @@ function draw2Discarded(playerCardToCheck, cardOnDiscardPile) {
     }   
 }
 
-function wildCardDiscarded() {
-
+function wildCardDiscarded(playerCardToCheck, cardOnDiscardPile) {
+    if (playerCardToCheck.Color === "Wild" && player1Turn === true && player2Turn === false) {
+        
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Wild Card was discarded! Choose new color.`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        createButtons(cardOnDiscardPile);
+        return; 
+    }
+    else if (playerCardToCheck.Color === "Wild" && player1Turn === false && player2Turn === true) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Wild Card was discarded! Choose new color.`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        createButtons(cardOnDiscardPile);
+        return;
+    }  
 }
 
-function wildCardDraw4Discarded() {
-
+function wildCardDraw4Discarded(playerCardToCheck, cardOnDiscardPile) {
+    if (playerCardToCheck.Color === "Wild Draw 4" && player1Turn === true && player2Turn === false) {
+        for (let i = 0; i < 4; i++) {
+            player2Cards.push(drawCard());
+            addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
+        }
+        setDisplay(true,false);
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Wild Draw 4 was discarded! Opposing player draws 4 cards to their hand. Select a color to play with.`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        createButtons(cardOnDiscardPile);
+        return; 
+    }
+    else if (playerCardToCheck.Color === "Wild Draw 4" && player1Turn === false && player2Turn === true) {
+        for (let i = 0; i < 4; i++) {
+            player1Cards.push(drawCard());
+            addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
+        }
+        setDisplay(false,true);
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Wild Draw 4 was discarded! Opposing player draws 4 cards to their hand. Select a color to play with.`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        createButtons(cardOnDiscardPile);
+        return;
+    }  
 }
 
-function skipDiscarded() {
-
+function skipDiscarded(playerCardToCheck, cardOnDiscardPile) {
+    if (playerCardToCheck.Value === "Skip" && player1Turn === true && player2Turn === false) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Skip was used! Opposing player lost their turn.`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        return; 
+    }
+    else if (playerCardToCheck.Value === "Skip" && player1Turn === false && player2Turn === true) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Skip was used! Opposing player lost their turn.`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        return;
+    }   
 }
 
 function addCardToHand() {
+    console.log(cardOnDiscardPile);
     if (player1Turn === true && player2Turn === false) {
-        player1Cards.push(drawCard());
+        player1Cards[player1Cards.length] = drawCard();
         addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
     }
     else if (player1Turn === false && player2Turn === true) {
-        player2Cards.push(drawCard());
+        player2Cards[player2Cards.length] = drawCard();
         addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
     }
+}
+
+function createButtons(cardOnDiscardPile) {
+    console.log(cardOnDiscardPile);
+    let newGreenBtn = document.createElement("button");
+    newGreenBtn.classList.add("wildCardButton");
+    newGreenBtn.innerHTML = "Green";
+    gamePromptSection.appendChild(newGreenBtn);
+    let newRedBtn = document.createElement("button");
+    newRedBtn.classList.add("wildCardButton");
+    newRedBtn.innerHTML = "Red";
+    gamePromptSection.appendChild(newRedBtn);
+    let newBlueBtn = document.createElement("button");
+    newBlueBtn.classList.add("wildCardButton");
+    newBlueBtn.innerHTML = "Blue";
+    gamePromptSection.appendChild(newBlueBtn);
+    let newYellowBtn = document.createElement("button");
+    newYellowBtn.classList.add("wildCardButton");
+    newYellowBtn.innerHTML = "Yellow";
+    gamePromptSection.appendChild(newYellowBtn);
+    newBlueBtn.addEventListener("click", () => {
+        cardOnDiscardPile = {Color: "Blue", Value: "N/A"};
+        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        console.log(cardOnDiscardPile);
+        for (let i = gamePromptSection.children.length-1; i > 0; i--) {
+            if (gamePromptSection.children[i].tagName === "BUTTON") {
+                gamePromptSection.children[i].remove();
+            }
+        }
+        return cardOnDiscardPile;
+    });
+    newRedBtn.addEventListener("click", () => {
+        cardOnDiscardPile = {Color: "Red", Value: "N/A"};
+        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        console.log(cardOnDiscardPile);
+        for (let i = gamePromptSection.children.length-1; i > 0; i--) {
+            if (gamePromptSection.children[i].tagName === "BUTTON") {
+                gamePromptSection.children[i].remove();
+            }
+        }
+        return cardOnDiscardPile;
+    });
+    newGreenBtn.addEventListener("click", () => {
+        cardOnDiscardPile = {Color: "Green", Value: "N/A"};
+        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        console.log(cardOnDiscardPile);
+        for (let i = gamePromptSection.children.length-1; i > 0; i--) {
+            if (gamePromptSection.children[i].tagName === "BUTTON") {
+                gamePromptSection.children[i].remove();
+            }
+        }
+        return cardOnDiscardPile;
+    });
+    newYellowBtn.addEventListener("click", () => {
+        cardOnDiscardPile = {Color: "Yellow", Value: "N/A"};
+        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        console.log(cardOnDiscardPile);
+        for (let i = gamePromptSection.children.length-1; i > 0; i--) {
+            if (gamePromptSection.children[i].tagName === "BUTTON") {
+                gamePromptSection.children[i].remove();
+            }
+        }
+        return cardOnDiscardPile;
+    });
 }
 
 function unoChecker() {
