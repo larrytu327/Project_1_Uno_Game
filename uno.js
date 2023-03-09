@@ -15,6 +15,7 @@ let allPlayer1CardSlots = document.getElementsByClassName("cardsPlayer1");
 let allPlayer2CardSlots = document.getElementsByClassName
 ("cardsPlayer2");
 let gamePromptSection = document.querySelector("#gamePrompts");
+let gamePromptsDisplayed = document.getElementsByClassName("newGamePrompt");
 let player1Stats = document.querySelector("#player1Stats");
 let player2Stats = document.querySelector("#player2Stats");
 
@@ -262,7 +263,9 @@ function startTurn() {
         player2Display = true;
         currentPlayer = player2Cards;
     }
-    document.querySelector(".newGamePrompt").remove();
+    for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
+        gamePromptsDisplayed[i].style.display = "none";
+    }
     setDisplay(player1Display, player2Display);
     return;
 }
@@ -307,12 +310,14 @@ function discardCard(playerCardToCheck, playerCards, player1Turn, player2Turn) {
         for (let i = 0; i < playerCards.length; i++) {
             if (playerCards[i] === playerCardToCheck) {
                 playerCards.splice(i, 1);
+                i = playerCards.length;
             }
         }
         if (player1Turn === true && player2Turn === false) {
             for (let i = 0; i < player1CardsInHand.children.length; i++) {
                 if (playerCardToCheck === player1CardsInHand.children[i].value) {
                     player1CardsInHand.children[i].remove();
+                    i = player1CardsInHand.children.length;
                 }
             }
         }
@@ -320,6 +325,7 @@ function discardCard(playerCardToCheck, playerCards, player1Turn, player2Turn) {
             for (let i = 0; i < player2CardsInHand.children.length; i++) {
                 if (playerCardToCheck === player2CardsInHand.children[i].value) {
                     player2CardsInHand.children[i].remove();
+                    i = player2CardsInHand.children.length;
                 }
             }
         }
@@ -527,6 +533,7 @@ function createButtons() {
 }
 
 function unoChecker() {
+    //need to fix this
     if (player1Turn === true && player2Turn === false) {
         if (player1Cards.length > 1) {
             document.querySelector(".newGamePrompt").remove();
@@ -657,6 +664,10 @@ function postGameInstructions() {
     gamePromptSection.appendChild(newGamePrompt);
     newGamePrompt.classList.add("newGamePrompt");
     return;
+}
+
+function checkForWinner() {
+    //invoke either at end of discardedCard function or after endTurn function
 }
 
 //Event Listeners
