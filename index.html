@@ -10,17 +10,18 @@
 </head>
 <body>
     <section id="title">Uno Game (2 Person)</section>
-    <section class="gameIntro">Game Play Guidelines: Use the "Start" button to randomly decide which player will start the game. Each player starts out with 7 random cards in their hand. A card will be placed on the board from the draw pile. The first player will see if they can play/place a corresponding card (matching by color or number to the card displayed on the board) from the cards in their hand. If they are unable to, they must draw a card. At the end of the turn, that player must click on the "End Turn" button. The turn then goes to the opposing player to see if they can place a card from their hand onto the board. The first player to get rid of all of their cards in their hand wins.</section>
+    <section class="gameIntro">Game Play Guidelines: Use the "Start New Game" button when Player 1 is ready to start the game. Each player starts out with 7 random cards in their hand. A card will be placed on the board from the card deck. The first player will see if they can play a corresponding card (matching by color or number to the card displayed on the discard pile) from the cards in their hand. If they are unable to, they must draw a card. At the end of the turn, that player must click on the "End Turn" button. Each player will click on "Start Turn" button to reveal only their own cards during their turn. The first player to get rid of all of their cards in their hand wins.</section>
     <section class="gameIntro">*If at any point a player only has one card left in their hand, they must acknowledge this by clicking on the "Uno" button before they end their turn. Or else, if the opposing player clicks "Uno" on the following turn, the player who failed to acknowledge "Uno" while only having one card left in their hand must draw four cards to their hand. </section>
     <main>
         <section id="sidebar">
             <div id="gameStats">Game Stats</div>
             <div id="player1Stats"></div>
             <div id="player2Stats"></div>
-            <button class="startGameButton">Start Game</button>
-            <button class="unoButton">Uno</button>
-            <button class="startTurnButton">Start Turn</button>
-            <button class="endTurnButton">End Turn</button>
+            <button class="startGameButton sidebarButtons">Start New Game</button>
+            <button class="unoButton1Card sidebarButtons">Uno (1 card left)</button>
+            <button class = "unoButtonForgot sidebarButtons">Uno (opposing player forgot to call Uno)</button>
+            <button class="startTurnButton sidebarButtons">Start Turn</button>
+            <button class="endTurnButton sidebarButtons">End Turn</button>
         </section>
         <section id="gameBoard">
             <div id="player1Hand"></div>

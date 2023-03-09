@@ -44,6 +44,15 @@ main {
     flex-wrap: wrap;
     flex-direction: column;
     align-items: center;
+    justify-content: space-around;
+    font-size: 1.0em;
+}
+
+.sidebarButtons {
+    border-radius: 5px;
+    font-size: 15px;
+    padding: 10px 20px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
 #player1Stats {
@@ -79,6 +88,7 @@ main {
     align-items: center;
     justify-content: space-around;
     margin: auto;
+    border-radius: 5px;
 }
 
 #player1Hand {
@@ -90,6 +100,7 @@ main {
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
+    border-radius: 5px;
 }
 
 #player2Hand {
@@ -101,6 +112,7 @@ main {
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
+    border-radius: 5px;
 }
 
 .cardsPlayer1 {
@@ -109,6 +121,8 @@ main {
     background-color: lightgreen;
     margin: auto;
     display: flex;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
 .cardsPlayer2 {
@@ -117,6 +131,8 @@ main {
     background-color: lightgreen;
     margin: auto;
     display: flex;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
 .cards {
@@ -129,6 +145,8 @@ main {
     text-align: center;
     display: flex;
     flex-direction: column;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
 .discardPileCard {
@@ -150,3 +168,5 @@ main {
 .colors {
 
 }
+
+

@@ -1,7 +1,8 @@
 //Grabbing elements from DOM
 let drawCardInput = document.querySelector(".deckCards");
 let startGame = document.querySelector(".startGameButton");
-let unoCall = document.querySelector(".unoButton");
+let uno1CardCall = document.querySelector(".unoButton1Card");
+let unoOppPlayerForgotCall = document.querySelector(".unoButtonForgot")
 let startTurnBtn = document.querySelector(".startTurnButton");
 let endTurnBtn = document.querySelector(".endTurnButton");
 let player1CardsInHand = document.querySelector("#player1Hand");
@@ -25,6 +26,7 @@ let player2Display = false;
 let player1Turn = false;
 let player2Turn = true;
 let cardOnDiscardPile = [];
+let unoCounter = false;
 
 
 //Establishing the deck of cards with arrays and objects
@@ -35,25 +37,74 @@ const wildCards = ["Wild", "Wild Draw 4"];
 //Creating deck of cards along with function for shuffling deck, credit to: https://www.programiz.com/javascript/examples/shuffle-card
 let deck = [];
 
-for (let i = 0; i < colors.length; i++) {
-    for (let j = 0; j < values.length; j++) {
-        let card = {Color: colors[i], Value: values[j]};
-        deck.push(card);
-        if (card.Value === "Skip" || card.Value === "Draw 2") {
+function createDeckOfCards() {
+    for (let i = 0; i < colors.length; i++) {
+        for (let j = 0; j < values.length; j++) {
+            let card = {Color: colors[i], Value: values[j]};
+            deck.push(card);
+            if (card.Value === "Skip" || card.Value === "Draw 2") {
+                deck.push(card);
+            }
+        }
+    }
+}
+
+function createWildCards() {
+    for (let i = 0; i < wildCards.length; i++) {
+        for (let j = 0; j < 4; j++) {
+            let card = {Color: wildCards[i], Value: "N/A"};
             deck.push(card);
         }
     }
 }
 
-for (let i = 0; i < wildCards.length; i++) {
-    for (let j = 0; j < 4; j++) {
-        let card = {Color: wildCards[i], Value: "N/A"};
-        deck.push(card);
+//Functions
+function shuffleDeck() {
+    for (let i = deck.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random()*i);
+        let temp = deck[i];
+        deck[i] = deck[j];
+        deck[j] = temp;
     }
 }
 
+function drawCard() {
+    shuffleDeck();
+    let cardBeingDrawn = [];
+    cardBeingDrawn = deck[Math.floor(Math.random()*(deck.length))];
+    deck.pop(cardBeingDrawn);
+    return cardBeingDrawn;
+}
 
-//Functions
+function dealCardsAtStart() {
+    for (let i = player1CardsInHand.children.length-1; i >= 0; i--) {
+        player1CardsInHand.children[i].remove();
+    }
+    for (let i = player2CardsInHand.children.length-1; i >= 0; i--) {
+        player2CardsInHand.children[i].remove();
+    }
+    player1Cards = [];
+    player2Cards = [];
+    cardOnDiscardPile = [];
+    deck = [];
+    createDeckOfCards();
+    createWildCards();
+    cardOnDiscardPile = drawCard();
+    displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+    for (let i = 0; i < 7; i++) {
+        player1Cards[i] = drawCard();
+        player2Cards[i] = drawCard();
+        addCardToPlayer1(player1Cards[i]);
+        addCardToPlayer2(player2Cards[i]);  
+    }
+    currentPlayer = player1Cards;
+    player1Display = true;
+    player2Display = false;
+    setDisplay(player1Display, player2Display);
+    player1Turn = true;
+    player2Turn = false;
+}
+
 function setDisplay(player1Display, player2Display) {
     if (player1Display === true && player2Display === false) {
         for (let i = 0; i<allPlayer1CardSlots.length; i++) {
@@ -82,55 +133,12 @@ function setDisplay(player1Display, player2Display) {
     }
 }
 
-function shuffleDeck() {
-    for (let i = deck.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random()*i);
-        let temp = deck[i];
-        deck[i] = deck[j];
-        deck[j] = temp;
-    }
-}
-
-function drawCard() {
-    shuffleDeck();
-    let cardBeingDrawn = [];
-    cardBeingDrawn = deck[Math.floor(Math.random()*(deck.length))];
-    deck.pop(cardBeingDrawn);
-    console.log(cardBeingDrawn);
-    return cardBeingDrawn;
-}
-
-function dealCardsAtStart() {
-    console.log(deck.length);
-    cardOnDiscardPile = drawCard();
-    displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
-    console.log(`Discard Pile Card, Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`);
-    for (let i = 0; i < 7; i++) {
-        player1Cards[i] = drawCard();
-        player2Cards[i] = drawCard();
-        addCardToPlayer1(player1Cards[i], cardOnDiscardPile, player1Cards);
-        addCardToPlayer2(player2Cards[i], cardOnDiscardPile, player2Cards);
-        console.log(`Player 1 Card# ${i+1}, Color: ${player1Cards[i].Color} Value: ${player1Cards[i].Value}`);
-        console.log(`Player 2 Card# ${i+1}, Color: ${player2Cards[i].Color} Value: ${player2Cards[i].Value}`);    
-    }
-    // console.log(deck.length);
-    // console.log(`allPlayer1CardSlots .length is: ${allPlayer1CardSlots.length}`);
-    currentPlayer = player1Cards;
-    player1Display = true;
-    player2Display = false;
-    setDisplay(player1Display, player2Display);
-    player1Turn = true;
-    player2Turn = false;
-    console.log(cardOnDiscardPile);
-}
-
-function addCardToPlayer1(player1Card, cardOnDiscardPile) {
+function addCardToPlayer1(player1Card) {
     let newCardOnPlayer1Board = document.createElement("div");
     newCardOnPlayer1Board.innerHTML = `Color: ${player1Card.Color} Value: ${player1Card.Value}`;
     newCardOnPlayer1Board.value = player1Card;
     newCardOnPlayer1Board.classList.add("cardsPlayer1");
     player1CardsInHand.appendChild(newCardOnPlayer1Board);
-    console.log(cardOnDiscardPile);    
     //Event Listener for new cards added to the player's hand 
     // newCardOnPlayer1Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer1Board.value,cardOnDiscardPile));
     newCardOnPlayer1Board.addEventListener("click", () => discardCard(newCardOnPlayer1Board.value, player1Cards, player1Turn, player2Turn));
@@ -138,13 +146,12 @@ function addCardToPlayer1(player1Card, cardOnDiscardPile) {
     return;
 }
 
-function addCardToPlayer2(player2Card, cardOnDiscardPile) {
+function addCardToPlayer2(player2Card) {
     let newCardOnPlayer2Board = document.createElement("div");
     newCardOnPlayer2Board.innerHTML = `Color: ${player2Card.Color} Value: ${player2Card.Value}`;
     newCardOnPlayer2Board.value = player2Card;
     newCardOnPlayer2Board.classList.add("cardsPlayer2");
-    player2CardsInHand.appendChild(newCardOnPlayer2Board);
-    console.log(cardOnDiscardPile);    
+    player2CardsInHand.appendChild(newCardOnPlayer2Board);    
     //Event Listener for new cards added to the player's hand 
     // newCardOnPlayer2Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer2Board.value,cardOnDiscardPile));
     newCardOnPlayer2Board.addEventListener("click", () => discardCard(newCardOnPlayer2Board.value, player2Cards, player1Turn, player2Turn));
@@ -196,7 +203,7 @@ function startTurn() {
     return;
 }
 
-function checkForMatch(playerCardToCheck, cardOnDiscardPile) {
+function checkForMatch(playerCardToCheck) {
     console.log(playerCardToCheck);
     console.log(cardOnDiscardPile);
     if (playerCardToCheck.Value === cardOnDiscardPile.Value || playerCardToCheck.Color === cardOnDiscardPile.Color) {
@@ -251,7 +258,6 @@ function discardCard(playerCardToCheck, playerCards, player1Turn, player2Turn) {
         skipDiscarded(playerCardToCheck, cardOnDiscardPile);
         console.log(cardOnDiscardPile);
         endTurn();
-        return cardOnDiscardPile;
     }
     else if (checkForMatch(playerCardToCheck, cardOnDiscardPile) === false) {
         document.querySelector(".newGamePrompt").remove();
@@ -346,6 +352,7 @@ function wildCardDraw4Discarded(playerCardToCheck, cardOnDiscardPile) {
 
 function skipDiscarded(playerCardToCheck, cardOnDiscardPile) {
     if (playerCardToCheck.Value === "Skip" && player1Turn === true && player2Turn === false) {
+        endTurn();
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Skip was used! Opposing player lost their turn.`;
@@ -354,6 +361,7 @@ function skipDiscarded(playerCardToCheck, cardOnDiscardPile) {
         return; 
     }
     else if (playerCardToCheck.Value === "Skip" && player1Turn === false && player2Turn === true) {
+        endTurn();
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Skip was used! Opposing player lost their turn.`;
@@ -440,7 +448,119 @@ function createButtons(cardOnDiscardPile) {
 }
 
 function unoChecker() {
-//if the unoChecker goes through and the player calls it and their hand only has one card left, print in Game prompt "One card left!" If the uno checker goes through but the person calling does not have one card left, add four cards and print game prompt "There was a mistake! Four cards added as a penalty!"
+    if (player1Turn === true && player2Turn === false) {
+        if (player1Cards.length > 1) {
+            document.querySelector(".newGamePrompt").remove();
+            let newGamePrompt = document.createElement("div");
+            newGamePrompt.innerHTML = `Uno was called, but the player calling Uno has more than 1 card in their hand! 4 cards added to the player's hand!`;
+            gamePromptSection.appendChild(newGamePrompt);
+            newGamePrompt.classList.add("newGamePrompt");
+            for (let i = 0; i < 4; i++) {
+                player1Cards.push(drawCard());
+                addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
+            }
+            unoCounter = false;
+        }
+        else if (player1Cards.length === 1) {
+            document.querySelector(".newGamePrompt").remove();
+            let newGamePrompt = document.createElement("div");
+            newGamePrompt.innerHTML = `Uno! Player 1 has only one card left!`;
+            gamePromptSection.appendChild(newGamePrompt);
+            newGamePrompt.classList.add("newGamePrompt");
+            unoCounter  = true;
+        }
+    }
+    else if (player1Turn === false && player2Turn === true) {
+        if (player2Cards.length > 1) {
+            document.querySelector(".newGamePrompt").remove();
+            let newGamePrompt = document.createElement("div");
+            newGamePrompt.innerHTML = `Uno was called, but the player calling Uno has more than 1 card in their hand! 4 cards added to the player's hand!`;
+            gamePromptSection.appendChild(newGamePrompt);
+            newGamePrompt.classList.add("newGamePrompt");
+            for (let i = 0; i < 4; i++) {
+                player2Cards.push(drawCard());
+                addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
+            }
+            noCounter = false;
+        }
+        else if (player2Cards.length === 1) {
+            document.querySelector(".newGamePrompt").remove();
+            let newGamePrompt = document.createElement("div");
+            newGamePrompt.innerHTML = `Uno! Player 2 has only one card left!`;
+            gamePromptSection.appendChild(newGamePrompt);
+            newGamePrompt.classList.add("newGamePrompt");
+            unoCounter  = true;
+        }
+    }
+}
+
+function unoOppPlayerCallChecker() {
+    if (player1Turn === true && player2Turn === false && unoCounter === true && player2Cards.length === 1) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Uno was called correctly by opposing player. 4 cards added to the player for incorrectly accusing other player!`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        for (let i = 0; i < 4; i++) {
+            player1Cards.push(drawCard());
+            addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
+        }
+    }
+    else if (player1Turn === true && player2Turn === false && unoCounter === false && player2Cards.length === 1) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Opposing player forgot to call Uno when they had 1 card left! 4 cards added to player 2!`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        for (let i = 0; i < 4; i++) {
+            player2Cards.push(drawCard());
+            addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
+        }
+    }
+    else if (player1Turn === true && player2Turn === false && unoCounter === false && player2Cards.length != 1) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Opposing player did not call Uno as they still have more than 1 card in their hand! 4 cards added to player 1 for incorrectly calling Uno!`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        for (let i = 0; i < 4; i++) {
+            player1Cards.push(drawCard());
+            addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
+        }
+    }
+    else if (player2Turn === true && player1Turn === false && unoCounter === true && player1Cards.length === 1) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Uno was called correctly by opposing player. 4 cards added to the player for incorrectly accusing other player!`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        for (let i = 0; i < 4; i++) {
+            player2Cards.push(drawCard());
+            addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
+        }
+    }
+    else if (player2Turn === true && player1Turn === false && unoCounter === false && player1Cards.length === 1) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Opposing player forgot to call Uno when they had 1 card left! 4 cards added to player 1!`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        for (let i = 0; i < 4; i++) {
+            player1Cards.push(drawCard());
+            addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
+        }
+    }
+    else if (player2Turn === true && player1Turn === false && unoCounter === false && player1Cards.length != 1) {
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Opposing player did not call Uno as they still have more than 1 card in their hand! 4 cards added to player 2 for incorrectly calling Uno!`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
+        for (let i = 0; i < 4; i++) {
+            player2Cards.push(drawCard());
+            addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
+        }
+    }
 }
 
 //Event Listeners
@@ -448,3 +568,5 @@ drawCardInput.addEventListener("click", addCardToHand);
 startGame.addEventListener("click", dealCardsAtStart);
 endTurnBtn.addEventListener("click", endTurn);
 startTurnBtn.addEventListener("click", startTurn);
+uno1CardCall.addEventListener("click", unoChecker);
+unoOppPlayerForgotCall.addEventListener("click", unoOppPlayerCallChecker);
