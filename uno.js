@@ -1,5 +1,6 @@
 //Grabbing elements from DOM
 let drawCardInput = document.querySelector(".deckCards");
+let gameInstructions = document.querySelector(".gameInstructions");
 let startGame = document.querySelector(".startGameButton");
 let uno1CardCall = document.querySelector(".unoButton1Card");
 let unoOppPlayerForgotCall = document.querySelector(".unoButtonForgot")
@@ -17,7 +18,6 @@ let gamePromptSection = document.querySelector("#gamePrompts");
 let player1Stats = document.querySelector("#player1Stats");
 let player2Stats = document.querySelector("#player2Stats");
 
-
 let player1Cards = [];
 let player2Cards = [];
 let currentPlayer = [];
@@ -27,38 +27,43 @@ let player1Turn = false;
 let player2Turn = true;
 let cardOnDiscardPile = [];
 let unoCounter = false;
+let deck = [];
 
 
 //Establishing the deck of cards with arrays and objects
 const colors = ["Blue", "Red", "Yellow", "Green"];
-const values = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Skip", "Draw 2"];
-const wildCards = ["Wild", "Wild Draw 4"];
+const values = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Skip", "Draw +2"];
+const wildCards = ["Wild", "Wild +4"];
 
 //Creating deck of cards along with function for shuffling deck, credit to: https://www.programiz.com/javascript/examples/shuffle-card
-let deck = [];
 
+//Functions
 function createDeckOfCards() {
     for (let i = 0; i < colors.length; i++) {
         for (let j = 0; j < values.length; j++) {
             let card = {Color: colors[i], Value: values[j]};
             deck.push(card);
-            if (card.Value === "Skip" || card.Value === "Draw 2") {
+            if (card.Value === "Skip" || card.Value === "Draw +2") {
                 deck.push(card);
             }
         }
     }
+    return;
 }
 
 function createWildCards() {
     for (let i = 0; i < wildCards.length; i++) {
         for (let j = 0; j < 4; j++) {
-            let card = {Color: wildCards[i], Value: "N/A"};
+            let card = {Color: wildCards[i], Value: "Wild"};
+            if (card.Color === "Wild +4") {
+                card.Value = "Draw +4"
+            }
             deck.push(card);
         }
     }
+    return;
 }
 
-//Functions
 function shuffleDeck() {
     for (let i = deck.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random()*i);
@@ -66,6 +71,7 @@ function shuffleDeck() {
         deck[i] = deck[j];
         deck[j] = temp;
     }
+    return;
 }
 
 function drawCard() {
@@ -74,6 +80,19 @@ function drawCard() {
     cardBeingDrawn = deck[Math.floor(Math.random()*(deck.length))];
     deck.pop(cardBeingDrawn);
     return cardBeingDrawn;
+}
+
+function addCardToHand() {
+    console.log(cardOnDiscardPile);
+    if (player1Turn === true && player2Turn === false) {
+        player1Cards[player1Cards.length] = drawCard();
+        addCardToPlayer1(player1Cards[player1Cards.length-1]);
+    }
+    else if (player1Turn === false && player2Turn === true) {
+        player2Cards[player2Cards.length] = drawCard();
+        addCardToPlayer2(player2Cards[player2Cards.length-1]);
+    }
+    return;
 }
 
 function dealCardsAtStart() {
@@ -90,7 +109,8 @@ function dealCardsAtStart() {
     createDeckOfCards();
     createWildCards();
     cardOnDiscardPile = drawCard();
-    displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+    displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+    addColorToDiscardPile(cardOnDiscardPile);
     for (let i = 0; i < 7; i++) {
         player1Cards[i] = drawCard();
         player2Cards[i] = drawCard();
@@ -103,6 +123,77 @@ function dealCardsAtStart() {
     setDisplay(player1Display, player2Display);
     player1Turn = true;
     player2Turn = false;
+    return;
+}
+
+function addCardToPlayer1(player1Card) {
+    let newCardOnPlayer1Board = document.createElement("div");
+    newCardOnPlayer1Board.innerHTML = `${player1Card.Value}`;
+    newCardOnPlayer1Board.value = player1Card;
+    newCardOnPlayer1Board.classList.add("cardsPlayer1");
+    addColorToCards(newCardOnPlayer1Board);
+    player1CardsInHand.appendChild(newCardOnPlayer1Board);
+    newCardOnPlayer1Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer1Board.value));
+    newCardOnPlayer1Board.addEventListener("click", () => discardCard(newCardOnPlayer1Board.value, player1Cards, player1Turn, player2Turn));
+    player1Stats.innerHTML = `Player 1 has ${player1Cards.length} cards in their hand`;
+    return;
+}
+
+function addCardToPlayer2(player2Card) {
+    let newCardOnPlayer2Board = document.createElement("div");
+    newCardOnPlayer2Board.innerHTML = `${player2Card.Value}`;
+    newCardOnPlayer2Board.value = player2Card;
+    newCardOnPlayer2Board.classList.add("cardsPlayer2");
+    addColorToCards(newCardOnPlayer2Board); 
+    player2CardsInHand.appendChild(newCardOnPlayer2Board);   
+    newCardOnPlayer2Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer2Board.value));
+    newCardOnPlayer2Board.addEventListener("click", () => discardCard(newCardOnPlayer2Board.value, player2Cards, player1Turn, player2Turn));
+    player2Stats.innerHTML = `Player 2 has ${player2Cards.length} cards in their hand`;
+    return;
+}
+
+function addColorToDiscardPile(cardOnDiscardPile) {
+    console.log(cardOnDiscardPile);
+    if (cardOnDiscardPile.Color === "Blue") {
+        displayDiscardPileCard.classList.remove("redCard", "greenCard", "yellowCard", "wildCard");
+        displayDiscardPileCard.classList.add("blueCard");
+    }
+    else if (cardOnDiscardPile.Color === "Red") {
+        displayDiscardPileCard.classList.remove("blueCard", "greenCard", "yellowCard", "wildCard");
+        displayDiscardPileCard.classList.add("redCard");
+    }
+    else if (cardOnDiscardPile.Color === "Green") {
+        displayDiscardPileCard.classList.remove("redCard", "blueCard", "yellowCard", "wildCard");
+        displayDiscardPileCard.classList.add("greenCard");
+    }
+    else if (cardOnDiscardPile.Color === "Yellow") {
+        displayDiscardPileCard.classList.remove("redCard", "greenCard", "blueCard", "wildCard");
+        displayDiscardPileCard.classList.add("yellowCard");
+    }
+    else if (cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color === "Wild +4") {
+        displayDiscardPileCard.classList.remove("redCard", "greenCard", "yellowCard", "blueCard");
+        displayDiscardPileCard.classList.add("wildCard");
+    }
+    return;
+}
+
+function addColorToCards(newCardOnPlayerBoard) {
+    if (newCardOnPlayerBoard.value.Color === "Blue") {
+        newCardOnPlayerBoard.classList.add("blueCard");
+    }
+    else if (newCardOnPlayerBoard.value.Color === "Red") {
+        newCardOnPlayerBoard.classList.add("redCard");
+    }
+    else if (newCardOnPlayerBoard.value.Color === "Green") {
+        newCardOnPlayerBoard.classList.add("greenCard");
+    }
+    else if (newCardOnPlayerBoard.value.Color === "Yellow") {
+        newCardOnPlayerBoard.classList.add("yellowCard");
+    }
+    else if (newCardOnPlayerBoard.value.Color === "Wild" || newCardOnPlayerBoard.value.Color === "Wild +4") {
+        newCardOnPlayerBoard.classList.add("wildCard");
+    }
+    return;
 }
 
 function setDisplay(player1Display, player2Display) {
@@ -131,32 +222,6 @@ function setDisplay(player1Display, player2Display) {
         }
         return;
     }
-}
-
-function addCardToPlayer1(player1Card) {
-    let newCardOnPlayer1Board = document.createElement("div");
-    newCardOnPlayer1Board.innerHTML = `Color: ${player1Card.Color} Value: ${player1Card.Value}`;
-    newCardOnPlayer1Board.value = player1Card;
-    newCardOnPlayer1Board.classList.add("cardsPlayer1");
-    player1CardsInHand.appendChild(newCardOnPlayer1Board);
-    //Event Listener for new cards added to the player's hand 
-    // newCardOnPlayer1Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer1Board.value,cardOnDiscardPile));
-    newCardOnPlayer1Board.addEventListener("click", () => discardCard(newCardOnPlayer1Board.value, player1Cards, player1Turn, player2Turn));
-    player1Stats.innerHTML = `Player 1 has ${player1Cards.length} cards in their hand`;
-    return;
-}
-
-function addCardToPlayer2(player2Card) {
-    let newCardOnPlayer2Board = document.createElement("div");
-    newCardOnPlayer2Board.innerHTML = `Color: ${player2Card.Color} Value: ${player2Card.Value}`;
-    newCardOnPlayer2Board.value = player2Card;
-    newCardOnPlayer2Board.classList.add("cardsPlayer2");
-    player2CardsInHand.appendChild(newCardOnPlayer2Board);    
-    //Event Listener for new cards added to the player's hand 
-    // newCardOnPlayer2Board.addEventListener("mouseover", () => checkForMatch(newCardOnPlayer2Board.value,cardOnDiscardPile));
-    newCardOnPlayer2Board.addEventListener("click", () => discardCard(newCardOnPlayer2Board.value, player2Cards, player1Turn, player2Turn));
-    player2Stats.innerHTML = `Player 2 has ${player2Cards.length} cards in their hand`;
-    return;
 }
 
 function endTurn() {
@@ -197,7 +262,6 @@ function startTurn() {
         player2Display = true;
         currentPlayer = player2Cards;
     }
-    //removed the game prompts by class after clicking start turn button
     document.querySelector(".newGamePrompt").remove();
     setDisplay(player1Display, player2Display);
     return;
@@ -208,22 +272,38 @@ function checkForMatch(playerCardToCheck) {
     console.log(cardOnDiscardPile);
     if (playerCardToCheck.Value === cardOnDiscardPile.Value || playerCardToCheck.Color === cardOnDiscardPile.Color) {
         console.log("There is a Match with Discard Pile");
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `This card matches what's on the discard pile!`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");  
         return true;
     }
-    else if (playerCardToCheck.Color === "Wild" || playerCardToCheck.Color  === "Wild Draw 4" || cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color  === "Wild Draw 4") {
+    else if (playerCardToCheck.Color === "Wild" || playerCardToCheck.Color  === "Wild +4" || cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color  === "Wild +4") {
         console.log("There is a Match with Discard Pile");
+        document.querySelector(".newGamePrompt").remove();
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `This card matches what's on the discard pile!`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");  
         return true;
     }
     console.log("Not a Match with Discard Pile");
+    document.querySelector(".newGamePrompt").remove();
+    let newGamePrompt = document.createElement("div");
+    newGamePrompt.innerHTML = `This card does not match what's on the discard pile.`;
+    gamePromptSection.appendChild(newGamePrompt);
+    newGamePrompt.classList.add("newGamePrompt");
     return false;
 }
 
 function discardCard(playerCardToCheck, playerCards, player1Turn, player2Turn) {
     console.log(cardOnDiscardPile);
-    if (checkForMatch(playerCardToCheck, cardOnDiscardPile) === true) {
+    if (checkForMatch(playerCardToCheck) === true) {
         cardOnDiscardPile = playerCardToCheck;
         console.log(cardOnDiscardPile);
-        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+        addColorToDiscardPile(cardOnDiscardPile);
         for (let i = 0; i < playerCards.length; i++) {
             if (playerCards[i] === playerCardToCheck) {
                 playerCards.splice(i, 1);
@@ -250,29 +330,31 @@ function discardCard(playerCardToCheck, playerCards, player1Turn, player2Turn) {
         newGamePrompt.classList.add("newGamePrompt");    
         player1Stats.innerHTML = `Player 1 has ${player1Cards.length} cards in their hand`;
         player2Stats.innerHTML = `Player 2 has ${player2Cards.length} cards in their hand`;
-        draw2Discarded(playerCardToCheck, cardOnDiscardPile);
-        wildCardDiscarded(playerCardToCheck, cardOnDiscardPile);
+        draw2Discarded(playerCardToCheck);
+        wildCardDiscarded(playerCardToCheck);
         console.log(cardOnDiscardPile);
-        wildCardDraw4Discarded(playerCardToCheck, cardOnDiscardPile);
+        wildCardDraw4Discarded(playerCardToCheck);
         console.log(cardOnDiscardPile);
-        skipDiscarded(playerCardToCheck, cardOnDiscardPile);
+        skipDiscarded(playerCardToCheck);
         console.log(cardOnDiscardPile);
         endTurn();
+        return;
     }
-    else if (checkForMatch(playerCardToCheck, cardOnDiscardPile) === false) {
+    else if (checkForMatch(playerCardToCheck) === false) {
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `The card you selected does not match what's on the discard pile; select another card from your hand or draw a card from the card deck.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
+        return;
     }
 }
 
-function draw2Discarded(playerCardToCheck, cardOnDiscardPile) {
-    if (playerCardToCheck.Value === "Draw 2" && player1Turn === true && player2Turn === false) {
+function draw2Discarded(playerCardToCheck) {
+    if (playerCardToCheck.Value === "Draw +2" && player1Turn === true && player2Turn === false) {
         for (let i = 0; i < 2; i++) {
             player2Cards.push(drawCard());
-            addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
+            addCardToPlayer2(player2Cards[player2Cards.length-1]);
         }
         setDisplay(true, false);
         document.querySelector(".newGamePrompt").remove();
@@ -282,10 +364,10 @@ function draw2Discarded(playerCardToCheck, cardOnDiscardPile) {
         newGamePrompt.classList.add("newGamePrompt");
         return; 
     }
-    else if (playerCardToCheck.Value === "Draw 2" && player1Turn === false && player2Turn === true) {
+    else if (playerCardToCheck.Value === "Draw +2" && player1Turn === false && player2Turn === true) {
         for (let i = 0; i < 2; i++) {
             player1Cards.push(drawCard());
-            addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
+            addCardToPlayer1(player1Cards[player1Cards.length-1]);
         }
         setDisplay(false,true);
         document.querySelector(".newGamePrompt").remove();
@@ -297,7 +379,7 @@ function draw2Discarded(playerCardToCheck, cardOnDiscardPile) {
     }   
 }
 
-function wildCardDiscarded(playerCardToCheck, cardOnDiscardPile) {
+function wildCardDiscarded(playerCardToCheck) {
     if (playerCardToCheck.Color === "Wild" && player1Turn === true && player2Turn === false) {
         
         document.querySelector(".newGamePrompt").remove();
@@ -305,7 +387,9 @@ function wildCardDiscarded(playerCardToCheck, cardOnDiscardPile) {
         newGamePrompt.innerHTML = `Wild Card was discarded! Choose new color.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
-        createButtons(cardOnDiscardPile);
+        console.log(cardOnDiscardPile);
+        createButtons();
+        console.log(cardOnDiscardPile);
         return; 
     }
     else if (playerCardToCheck.Color === "Wild" && player1Turn === false && player2Turn === true) {
@@ -314,16 +398,18 @@ function wildCardDiscarded(playerCardToCheck, cardOnDiscardPile) {
         newGamePrompt.innerHTML = `Wild Card was discarded! Choose new color.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
-        createButtons(cardOnDiscardPile);
+        console.log(cardOnDiscardPile);
+        createButtons();
+        console.log(cardOnDiscardPile);
         return;
     }  
 }
 
-function wildCardDraw4Discarded(playerCardToCheck, cardOnDiscardPile) {
-    if (playerCardToCheck.Color === "Wild Draw 4" && player1Turn === true && player2Turn === false) {
+function wildCardDraw4Discarded(playerCardToCheck) {
+    if (playerCardToCheck.Color === "Wild +4" && player1Turn === true && player2Turn === false) {
         for (let i = 0; i < 4; i++) {
             player2Cards.push(drawCard());
-            addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
+            addCardToPlayer2(player2Cards[player2Cards.length-1]);
         }
         setDisplay(true,false);
         document.querySelector(".newGamePrompt").remove();
@@ -331,13 +417,13 @@ function wildCardDraw4Discarded(playerCardToCheck, cardOnDiscardPile) {
         newGamePrompt.innerHTML = `Wild Draw 4 was discarded! Opposing player draws 4 cards to their hand. Select a color to play with.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
-        createButtons(cardOnDiscardPile);
+        createButtons();
         return; 
     }
-    else if (playerCardToCheck.Color === "Wild Draw 4" && player1Turn === false && player2Turn === true) {
+    else if (playerCardToCheck.Color === "Wild +4" && player1Turn === false && player2Turn === true) {
         for (let i = 0; i < 4; i++) {
             player1Cards.push(drawCard());
-            addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
+            addCardToPlayer1(player1Cards[player1Cards.length-1]);
         }
         setDisplay(false,true);
         document.querySelector(".newGamePrompt").remove();
@@ -345,12 +431,12 @@ function wildCardDraw4Discarded(playerCardToCheck, cardOnDiscardPile) {
         newGamePrompt.innerHTML = `Wild Draw 4 was discarded! Opposing player draws 4 cards to their hand. Select a color to play with.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
-        createButtons(cardOnDiscardPile);
+        createButtons();
         return;
     }  
 }
 
-function skipDiscarded(playerCardToCheck, cardOnDiscardPile) {
+function skipDiscarded(playerCardToCheck) {
     if (playerCardToCheck.Value === "Skip" && player1Turn === true && player2Turn === false) {
         endTurn();
         document.querySelector(".newGamePrompt").remove();
@@ -371,19 +457,7 @@ function skipDiscarded(playerCardToCheck, cardOnDiscardPile) {
     }   
 }
 
-function addCardToHand() {
-    console.log(cardOnDiscardPile);
-    if (player1Turn === true && player2Turn === false) {
-        player1Cards[player1Cards.length] = drawCard();
-        addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
-    }
-    else if (player1Turn === false && player2Turn === true) {
-        player2Cards[player2Cards.length] = drawCard();
-        addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
-    }
-}
-
-function createButtons(cardOnDiscardPile) {
+function createButtons() {
     console.log(cardOnDiscardPile);
     let newGreenBtn = document.createElement("button");
     newGreenBtn.classList.add("wildCardButton");
@@ -402,49 +476,54 @@ function createButtons(cardOnDiscardPile) {
     newYellowBtn.innerHTML = "Yellow";
     gamePromptSection.appendChild(newYellowBtn);
     newBlueBtn.addEventListener("click", () => {
-        cardOnDiscardPile = {Color: "Blue", Value: "N/A"};
-        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        cardOnDiscardPile = {Color: "Blue", Value: "Blue"};
+        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+        addColorToDiscardPile(cardOnDiscardPile);
         console.log(cardOnDiscardPile);
         for (let i = gamePromptSection.children.length-1; i > 0; i--) {
             if (gamePromptSection.children[i].tagName === "BUTTON") {
                 gamePromptSection.children[i].remove();
             }
         }
-        return cardOnDiscardPile;
+        return;
     });
     newRedBtn.addEventListener("click", () => {
-        cardOnDiscardPile = {Color: "Red", Value: "N/A"};
-        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        cardOnDiscardPile = {Color: "Red", Value: "Red"};
+        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+        addColorToDiscardPile(cardOnDiscardPile);
         console.log(cardOnDiscardPile);
         for (let i = gamePromptSection.children.length-1; i > 0; i--) {
             if (gamePromptSection.children[i].tagName === "BUTTON") {
                 gamePromptSection.children[i].remove();
             }
         }
-        return cardOnDiscardPile;
+        return;
     });
     newGreenBtn.addEventListener("click", () => {
-        cardOnDiscardPile = {Color: "Green", Value: "N/A"};
-        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        cardOnDiscardPile = {Color: "Green", Value: "Green"};
+        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+        addColorToDiscardPile(cardOnDiscardPile);
         console.log(cardOnDiscardPile);
         for (let i = gamePromptSection.children.length-1; i > 0; i--) {
             if (gamePromptSection.children[i].tagName === "BUTTON") {
                 gamePromptSection.children[i].remove();
             }
         }
-        return cardOnDiscardPile;
+        return;
     });
     newYellowBtn.addEventListener("click", () => {
-        cardOnDiscardPile = {Color: "Yellow", Value: "N/A"};
-        displayDiscardPileCard.innerHTML = `Color: ${cardOnDiscardPile.Color} Value: ${cardOnDiscardPile.Value}`;
+        cardOnDiscardPile = {Color: "Yellow", Value: "Yellow"};
+        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+        addColorToDiscardPile(cardOnDiscardPile);
         console.log(cardOnDiscardPile);
         for (let i = gamePromptSection.children.length-1; i > 0; i--) {
             if (gamePromptSection.children[i].tagName === "BUTTON") {
                 gamePromptSection.children[i].remove();
             }
         }
-        return cardOnDiscardPile;
+        return;
     });
+    console.log(cardOnDiscardPile);
 }
 
 function unoChecker() {
@@ -469,6 +548,7 @@ function unoChecker() {
             newGamePrompt.classList.add("newGamePrompt");
             unoCounter  = true;
         }
+        return;
     }
     else if (player1Turn === false && player2Turn === true) {
         if (player2Cards.length > 1) {
@@ -491,6 +571,7 @@ function unoChecker() {
             newGamePrompt.classList.add("newGamePrompt");
             unoCounter  = true;
         }
+        return;
     }
 }
 
@@ -505,6 +586,7 @@ function unoOppPlayerCallChecker() {
             player1Cards.push(drawCard());
             addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
         }
+        return;
     }
     else if (player1Turn === true && player2Turn === false && unoCounter === false && player2Cards.length === 1) {
         document.querySelector(".newGamePrompt").remove();
@@ -516,6 +598,7 @@ function unoOppPlayerCallChecker() {
             player2Cards.push(drawCard());
             addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
         }
+        return;
     }
     else if (player1Turn === true && player2Turn === false && unoCounter === false && player2Cards.length != 1) {
         document.querySelector(".newGamePrompt").remove();
@@ -527,6 +610,7 @@ function unoOppPlayerCallChecker() {
             player1Cards.push(drawCard());
             addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
         }
+        return;
     }
     else if (player2Turn === true && player1Turn === false && unoCounter === true && player1Cards.length === 1) {
         document.querySelector(".newGamePrompt").remove();
@@ -538,6 +622,7 @@ function unoOppPlayerCallChecker() {
             player2Cards.push(drawCard());
             addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
         }
+        return;
     }
     else if (player2Turn === true && player1Turn === false && unoCounter === false && player1Cards.length === 1) {
         document.querySelector(".newGamePrompt").remove();
@@ -549,6 +634,7 @@ function unoOppPlayerCallChecker() {
             player1Cards.push(drawCard());
             addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
         }
+        return;
     }
     else if (player2Turn === true && player1Turn === false && unoCounter === false && player1Cards.length != 1) {
         document.querySelector(".newGamePrompt").remove();
@@ -560,7 +646,17 @@ function unoOppPlayerCallChecker() {
             player2Cards.push(drawCard());
             addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
         }
+        return;
     }
+}
+
+function postGameInstructions() {
+    document.querySelector(".newGamePrompt").remove();
+    let newGamePrompt = document.createElement("div");
+    newGamePrompt.innerHTML = `Use the "Start New Game" button when Player 1 is ready to start the game. Each player starts out with 7 random cards in their hand. A card will be placed on the board from the card deck. The first player will see if they can play a corresponding card (matching by color or number to the card displayed on the discard pile) from the cards in their hand. If they are unable to, they must draw a card. At the end of the turn, that player must click on the "End Turn" button. Each player will click on "Start Turn" button to reveal only their own cards during their turn. The first player to get rid of all of their cards in their hand wins. *If at any point a player only has one card left in their hand, they must acknowledge this by clicking on the "Uno" button before they end their turn. Or else, if the opposing player clicks "Uno" on the following turn, the player who failed to acknowledge "Uno" while only having one card left in their hand must draw four cards to their hand.`;
+    gamePromptSection.appendChild(newGamePrompt);
+    newGamePrompt.classList.add("newGamePrompt");
+    return;
 }
 
 //Event Listeners
@@ -570,3 +666,4 @@ endTurnBtn.addEventListener("click", endTurn);
 startTurnBtn.addEventListener("click", startTurn);
 uno1CardCall.addEventListener("click", unoChecker);
 unoOppPlayerForgotCall.addEventListener("click", unoOppPlayerCallChecker);
+gameInstructions.addEventListener("click", postGameInstructions);

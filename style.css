@@ -51,7 +51,7 @@ main {
 .sidebarButtons {
     border-radius: 5px;
     font-size: 15px;
-    padding: 10px 20px;
+    padding: 8px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
@@ -118,21 +118,25 @@ main {
 .cardsPlayer1 {
     width: 7vw;
     height: 16vh;
-    background-color: lightgreen;
     margin: auto;
     display: flex;
     border-radius: 5px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .cardsPlayer2 {
     width: 7vw;
     height: 16vh;
-    background-color: lightgreen;
     margin: auto;
     display: flex;
     border-radius: 5px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .cards {
@@ -159,14 +163,60 @@ main {
 
 #gamePrompts {
     font-size: 1.1em;
-    height: 8vh;
     width: 95.5vw;
+    height: 23vh;
     background-color: lightseagreen;
     text-align: center;
 }
 
-.colors {
+.blueCard {
+    width: 7vw;
+    height: 16vh;
+    background-color: rgb(35, 147, 227);
+    margin: auto;
+    display: flex;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
 
+.redCard {
+    width: 7vw;
+    height: 16vh;
+    background-color: rgb(214, 60, 60);
+    margin: auto;
+    display: flex;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.greenCard {
+    width: 7vw;
+    height: 16vh;
+    background-color: rgb(73, 220, 73);
+    margin: auto;
+    display: flex;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.yellowCard {
+    width: 7vw;
+    height: 16vh;
+    background-color: rgb(228, 228, 88);
+    margin: auto;
+    display: flex;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.wildCard {
+    width: 7vw;
+    height: 16vh;
+    background-color: rgb(223, 103, 201);
+    margin: auto;
+    display: flex;
+    border-radius: 5px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
 
