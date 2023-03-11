@@ -49,6 +49,7 @@ main {
     font-size: 15px;
     padding: 8px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    cursor: pointer;
 }
 
 #player1Stats {
@@ -121,6 +122,7 @@ main {
     text-align: center;
     flex-direction: column;
     justify-content: space-around;
+    cursor: pointer;
 }
 
 .cardsPlayer2 {
@@ -133,6 +135,7 @@ main {
     text-align: center;
     flex-direction: column;
     justify-content: space-around;
+    cursor: pointer;
 }
 
 .cards {
@@ -175,6 +178,7 @@ main {
     background-image: url("https://www.logolynx.com/images/logolynx/c0/c058325d5928db3d77548fcdc8f31345.jpeg");
     background-size: cover;
     background-attachment:local;
+    cursor: pointer;
 
 }
 
@@ -204,6 +208,7 @@ main {
     border-radius: 5px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     font-size: 1.7em;
+    cursor: pointer;
 }
 
 .redCard {
@@ -215,6 +220,7 @@ main {
     border-radius: 5px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     font-size: 1.7em;
+    cursor: pointer;
 }
 
 .greenCard {
@@ -226,6 +232,7 @@ main {
     border-radius: 5px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     font-size: 1.7em;
+    cursor: pointer;
 }
 
 .yellowCard {
@@ -237,6 +244,7 @@ main {
     border-radius: 5px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     font-size: 1.7em;
+    cursor: pointer;
 }
 
 .wildCard {
@@ -248,6 +256,7 @@ main {
     border-radius: 5px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     font-size: 1.7em;
+    cursor: pointer;
 }
 
 .unoAlert {

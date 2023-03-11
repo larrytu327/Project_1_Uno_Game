@@ -232,40 +232,45 @@ function setDisplay(player1Display, player2Display) {
 }
 
 function endTurn() {
-    for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
-        gamePromptsDisplayed[i].style.display = "none";
+    if (cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color === "Wild +4") {
+        setDisplay(player1Turn, player2Turn);
     }
-    if (checkForWinner() === true) {
-        return;
-    }
-    if (unoCounterPlayer1 === true && player1Cards.length > 1) {
-        player1CardsInHand.classList.remove("unoAlert");
-        player1CardsInHand.classList.add("player1Hand");
-    }
-    else if (unoCounterPlayer2 === true && player2Cards.length > 1) {
-        player2CardsInHand.classList.remove("unoAlert");
-        player2CardsInHand.classList.add("player2Hand");
-    }
-    player1Display = false;
-    player2Display = false;
-    setDisplay(player1Display, player2Display);
-    if (player1Turn === true) {
-        let newGamePrompt = document.createElement("div");
-        newGamePrompt.innerHTML = `Player 2, click on "Start Turn" button to reveal your cards and start your turn`;
-        gamePromptSection.appendChild(newGamePrompt);
-        newGamePrompt.classList.add("newGamePrompt");
-        player1Turn = false;
-        player2Turn = true;
-        return;
-    }
-    else if (player2Turn === true) {
-        let newGamePrompt = document.createElement("div");
-        newGamePrompt.innerHTML = `Player 1, click on "Start Turn" button to reveal your cards and start your turn`;
-        gamePromptSection.appendChild(newGamePrompt);
-        newGamePrompt.classList.add("newGamePrompt");
-        player1Turn = true;
-        player2Turn = false;
-        return;
+    else {
+        for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
+            gamePromptsDisplayed[i].style.display = "none";
+        }
+        if (checkForWinner() === true) {
+            return;
+        }
+        if (unoCounterPlayer1 === true && player1Cards.length > 1) {
+            player1CardsInHand.classList.remove("unoAlert");
+            player1CardsInHand.classList.add("player1Hand");
+        }
+        else if (unoCounterPlayer2 === true && player2Cards.length > 1) {
+            player2CardsInHand.classList.remove("unoAlert");
+            player2CardsInHand.classList.add("player2Hand");
+        }
+        player1Display = false;
+        player2Display = false;
+        setDisplay(player1Display, player2Display);
+        if (player1Turn === true) {
+            let newGamePrompt = document.createElement("div");
+            newGamePrompt.innerHTML = `Player 2, click on "Start Turn" button to reveal your cards and start your turn`;
+            gamePromptSection.appendChild(newGamePrompt);
+            newGamePrompt.classList.add("newGamePrompt");
+            player1Turn = false;
+            player2Turn = true;
+            return;
+        }
+        else if (player2Turn === true) {
+            let newGamePrompt = document.createElement("div");
+            newGamePrompt.innerHTML = `Player 1, click on "Start Turn" button to reveal your cards and start your turn`;
+            gamePromptSection.appendChild(newGamePrompt);
+            newGamePrompt.classList.add("newGamePrompt");
+            player1Turn = true;
+            player2Turn = false;
+            return;
+        }
     }
 }
 
@@ -401,25 +406,16 @@ function draw2Discarded(playerCardToCheck) {
 }
 
 function wildCardDiscarded(playerCardToCheck) {
-    if (playerCardToCheck.Color === "Wild" && player1Turn === true && player2Turn === false) {
-        
+    if (playerCardToCheck.Color === "Wild") {
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Wild Card was discarded! Choose new color.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
+        setDisplay(true, false);
         createButtons();
         return; 
     }
-    else if (playerCardToCheck.Color === "Wild" && player1Turn === false && player2Turn === true) {
-        document.querySelector(".newGamePrompt").remove();
-        let newGamePrompt = document.createElement("div");
-        newGamePrompt.innerHTML = `Wild Card was discarded! Choose new color.`;
-        gamePromptSection.appendChild(newGamePrompt);
-        newGamePrompt.classList.add("newGamePrompt");
-        createButtons();
-        return;
-    }  
 }
 
 function wildCardDraw4Discarded(playerCardToCheck) {
@@ -434,6 +430,7 @@ function wildCardDraw4Discarded(playerCardToCheck) {
         newGamePrompt.innerHTML = `Wild Draw 4 was discarded! Opposing player draws 4 cards to their hand. Select a color to play with.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
+        setDisplay(player1Turn, player2Turn);
         createButtons();
         return; 
     }
@@ -448,6 +445,7 @@ function wildCardDraw4Discarded(playerCardToCheck) {
         newGamePrompt.innerHTML = `Wild Draw 4 was discarded! Opposing player draws 4 cards to their hand. Select a color to play with.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
+        setDisplay(player1Turn, player2Turn);
         createButtons();
         return;
     }  
@@ -500,6 +498,7 @@ function createButtons() {
                 gamePromptSection.children[i].remove();
             }
         }
+        endTurn();
         return;
     });
     newRedBtn.addEventListener("click", () => {
@@ -511,6 +510,7 @@ function createButtons() {
                 gamePromptSection.children[i].remove();
             }
         }
+        endTurn();
         return;
     });
     newGreenBtn.addEventListener("click", () => {
@@ -522,6 +522,7 @@ function createButtons() {
                 gamePromptSection.children[i].remove();
             }
         }
+        endTurn();
         return;
     });
     newYellowBtn.addEventListener("click", () => {
@@ -533,6 +534,7 @@ function createButtons() {
                 gamePromptSection.children[i].remove();
             }
         }
+        endTurn();
         return;
     });
 }
