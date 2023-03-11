@@ -58,7 +58,7 @@
 ## Future considerations for building out
 
 - Be able to play with more than 2 players
-- Be able to include additional action cards (ie. reverse,
+- Be able to include additional action cards
     - Allow players to establish a new action card and specify new rules
 - Allow players to "cut in" by putting down a card that matches identically to what is on the board, even out of turn.
 - Having a timer to limit how much time a player gets on their turn, or else it skips their turn.
