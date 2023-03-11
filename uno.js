@@ -6,8 +6,8 @@ let uno1CardCall = document.querySelector(".unoButton1Card");
 let unoOppPlayerForgotCall = document.querySelector(".unoButtonForgot")
 let startTurnBtn = document.querySelector(".startTurnButton");
 let endTurnBtn = document.querySelector(".endTurnButton");
-let player1CardsInHand = document.querySelector("#player1Hand");
-let player2CardsInHand = document.querySelector("#player2Hand");
+let player1CardsInHand = document.querySelector(".player1Hand");
+let player2CardsInHand = document.querySelector(".player2Hand");
 let cardPileOutput = document.querySelector("#cardPile");
 let displayDrawCards = document.querySelector(".drawCards");
 let displayDiscardPileCard = document.querySelector(".discardPileCard");
@@ -21,13 +21,13 @@ let player2Stats = document.querySelector("#player2Stats");
 
 let player1Cards = [];
 let player2Cards = [];
-let currentPlayer = [];
 let player1Display = false;
 let player2Display = false;
 let player1Turn = false;
 let player2Turn = true;
 let cardOnDiscardPile = [];
-let unoCounter = false;
+let unoCounterPlayer1 = false;
+let unoCounterPlayer2 = false;
 let deck = [];
 
 
@@ -84,7 +84,6 @@ function drawCard() {
 }
 
 function addCardToHand() {
-    console.log(cardOnDiscardPile);
     if (player1Turn === true && player2Turn === false) {
         player1Cards[player1Cards.length] = drawCard();
         addCardToPlayer1(player1Cards[player1Cards.length-1]);
@@ -93,6 +92,11 @@ function addCardToHand() {
         player2Cards[player2Cards.length] = drawCard();
         addCardToPlayer2(player2Cards[player2Cards.length-1]);
     }
+    document.querySelector(".newGamePrompt").remove();
+    let newGamePrompt = document.createElement("div");
+    newGamePrompt.innerHTML = `After drawing a card from the card deck, you may play that card or you can click on the "End Turn" button to end your turn.`;
+    gamePromptSection.appendChild(newGamePrompt);
+    newGamePrompt.classList.add("newGamePrompt");
     return;
 }
 
@@ -154,7 +158,6 @@ function addCardToPlayer2(player2Card) {
 }
 
 function addColorToDiscardPile(cardOnDiscardPile) {
-    console.log(cardOnDiscardPile);
     if (cardOnDiscardPile.Color === "Blue") {
         displayDiscardPileCard.classList.remove("redCard", "greenCard", "yellowCard", "wildCard");
         displayDiscardPileCard.classList.add("blueCard");
@@ -226,12 +229,24 @@ function setDisplay(player1Display, player2Display) {
 }
 
 function endTurn() {
-    console.log(cardOnDiscardPile);
+    for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
+        gamePromptsDisplayed[i].style.display = "none";
+    }
+    if (checkForWinner() === true) {
+        return;
+    }
+    if (unoCounterPlayer1 === true && player1Cards.length > 1) {
+        player1CardsInHand.classList.remove("unoAlert");
+        player1CardsInHand.classList.add("player1Hand");
+    }
+    else if (unoCounterPlayer2 === true && player2Cards.length > 1) {
+        player2CardsInHand.classList.remove("unoAlert");
+        player2CardsInHand.classList.add("player2Hand");
+    }
     player1Display = false;
     player2Display = false;
     setDisplay(player1Display, player2Display);
     if (player1Turn === true) {
-        console.log("Player 2, click on start turn");
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Player 2, click on "Start Turn" button to reveal your cards and start your turn`;
         gamePromptSection.appendChild(newGamePrompt);
@@ -241,7 +256,6 @@ function endTurn() {
         return;
     }
     else if (player2Turn === true) {
-        console.log("Player 1, click on start turn");
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Player 1, click on "Start Turn" button to reveal your cards and start your turn`;
         gamePromptSection.appendChild(newGamePrompt);
@@ -253,58 +267,59 @@ function endTurn() {
 }
 
 function startTurn() {
-    console.log(cardOnDiscardPile);
+    for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
+        gamePromptsDisplayed[i].style.display = "none";
+    }
     if (player1Turn === true && player2Turn === false) {
         player1Display = true;
         player2Display = false;
-        currentPlayer = player1Cards;
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Player 1, select a card to play/discard or draw a card from the card deck if unable to discard a card.`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
     } else if (player1Turn === false && player2Turn === true) {
         player1Display = false;
-        player2Display = true;
-        currentPlayer = player2Cards;
-    }
-    for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
-        gamePromptsDisplayed[i].style.display = "none";
+        player2Display = true;    
+        let newGamePrompt = document.createElement("div");
+        newGamePrompt.innerHTML = `Player 2, select a card to play/discard or draw a card from the card deck if unable to discard a card.`;
+        gamePromptSection.appendChild(newGamePrompt);
+        newGamePrompt.classList.add("newGamePrompt");
     }
     setDisplay(player1Display, player2Display);
     return;
 }
 
 function checkForMatch(playerCardToCheck) {
-    console.log(playerCardToCheck);
-    console.log(cardOnDiscardPile);
+    for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
+        gamePromptsDisplayed[i].style.display = "none";
+    }
     if (playerCardToCheck.Value === cardOnDiscardPile.Value || playerCardToCheck.Color === cardOnDiscardPile.Color) {
-        console.log("There is a Match with Discard Pile");
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
-        newGamePrompt.innerHTML = `This card matches what's on the discard pile!`;
+        newGamePrompt.innerHTML = `This card (${playerCardToCheck.Color} ${playerCardToCheck.Value}) is a match with the discard pile card (${cardOnDiscardPile.Color} ${cardOnDiscardPile.Value})`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");  
         return true;
     }
     else if (playerCardToCheck.Color === "Wild" || playerCardToCheck.Color  === "Wild +4" || cardOnDiscardPile.Color === "Wild" || cardOnDiscardPile.Color  === "Wild +4") {
-        console.log("There is a Match with Discard Pile");
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
-        newGamePrompt.innerHTML = `This card matches what's on the discard pile!`;
+        newGamePrompt.innerHTML = `This card (${playerCardToCheck.Color}) is a match with the discard pile card (${cardOnDiscardPile.Color} ${cardOnDiscardPile.Value})`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");  
         return true;
     }
-    console.log("Not a Match with Discard Pile");
     document.querySelector(".newGamePrompt").remove();
     let newGamePrompt = document.createElement("div");
-    newGamePrompt.innerHTML = `This card does not match what's on the discard pile.`;
+    newGamePrompt.innerHTML = `This card (${playerCardToCheck.Color} ${playerCardToCheck.Value}) is not a match with the discard pile card (${cardOnDiscardPile.Color} ${cardOnDiscardPile.Value})`;
     gamePromptSection.appendChild(newGamePrompt);
     newGamePrompt.classList.add("newGamePrompt");
     return false;
 }
 
 function discardCard(playerCardToCheck, playerCards, player1Turn, player2Turn) {
-    console.log(cardOnDiscardPile);
     if (checkForMatch(playerCardToCheck) === true) {
         cardOnDiscardPile = playerCardToCheck;
-        console.log(cardOnDiscardPile);
         displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
         addColorToDiscardPile(cardOnDiscardPile);
         for (let i = 0; i < playerCards.length; i++) {
@@ -338,11 +353,8 @@ function discardCard(playerCardToCheck, playerCards, player1Turn, player2Turn) {
         player2Stats.innerHTML = `Player 2 has ${player2Cards.length} cards in their hand`;
         draw2Discarded(playerCardToCheck);
         wildCardDiscarded(playerCardToCheck);
-        console.log(cardOnDiscardPile);
         wildCardDraw4Discarded(playerCardToCheck);
-        console.log(cardOnDiscardPile);
         skipDiscarded(playerCardToCheck);
-        console.log(cardOnDiscardPile);
         endTurn();
         return;
     }
@@ -393,9 +405,7 @@ function wildCardDiscarded(playerCardToCheck) {
         newGamePrompt.innerHTML = `Wild Card was discarded! Choose new color.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
-        console.log(cardOnDiscardPile);
         createButtons();
-        console.log(cardOnDiscardPile);
         return; 
     }
     else if (playerCardToCheck.Color === "Wild" && player1Turn === false && player2Turn === true) {
@@ -404,9 +414,7 @@ function wildCardDiscarded(playerCardToCheck) {
         newGamePrompt.innerHTML = `Wild Card was discarded! Choose new color.`;
         gamePromptSection.appendChild(newGamePrompt);
         newGamePrompt.classList.add("newGamePrompt");
-        console.log(cardOnDiscardPile);
         createButtons();
-        console.log(cardOnDiscardPile);
         return;
     }  
 }
@@ -464,7 +472,6 @@ function skipDiscarded(playerCardToCheck) {
 }
 
 function createButtons() {
-    console.log(cardOnDiscardPile);
     let newGreenBtn = document.createElement("button");
     newGreenBtn.classList.add("wildCardButton");
     newGreenBtn.innerHTML = "Green";
@@ -482,10 +489,9 @@ function createButtons() {
     newYellowBtn.innerHTML = "Yellow";
     gamePromptSection.appendChild(newYellowBtn);
     newBlueBtn.addEventListener("click", () => {
-        cardOnDiscardPile = {Color: "Blue", Value: "Blue"};
-        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+        cardOnDiscardPile = {Color: "Blue", Value: ""};
+        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Color}`;
         addColorToDiscardPile(cardOnDiscardPile);
-        console.log(cardOnDiscardPile);
         for (let i = gamePromptSection.children.length-1; i > 0; i--) {
             if (gamePromptSection.children[i].tagName === "BUTTON") {
                 gamePromptSection.children[i].remove();
@@ -494,10 +500,9 @@ function createButtons() {
         return;
     });
     newRedBtn.addEventListener("click", () => {
-        cardOnDiscardPile = {Color: "Red", Value: "Red"};
-        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+        cardOnDiscardPile = {Color: "Red", Value: ""};
+        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Color}`;
         addColorToDiscardPile(cardOnDiscardPile);
-        console.log(cardOnDiscardPile);
         for (let i = gamePromptSection.children.length-1; i > 0; i--) {
             if (gamePromptSection.children[i].tagName === "BUTTON") {
                 gamePromptSection.children[i].remove();
@@ -506,10 +511,9 @@ function createButtons() {
         return;
     });
     newGreenBtn.addEventListener("click", () => {
-        cardOnDiscardPile = {Color: "Green", Value: "Green"};
-        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+        cardOnDiscardPile = {Color: "Green", Value: ""};
+        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Color}`;
         addColorToDiscardPile(cardOnDiscardPile);
-        console.log(cardOnDiscardPile);
         for (let i = gamePromptSection.children.length-1; i > 0; i--) {
             if (gamePromptSection.children[i].tagName === "BUTTON") {
                 gamePromptSection.children[i].remove();
@@ -518,10 +522,9 @@ function createButtons() {
         return;
     });
     newYellowBtn.addEventListener("click", () => {
-        cardOnDiscardPile = {Color: "Yellow", Value: "Yellow"};
-        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Value}`;
+        cardOnDiscardPile = {Color: "Yellow", Value: ""};
+        displayDiscardPileCard.innerHTML = `${cardOnDiscardPile.Color}`;
         addColorToDiscardPile(cardOnDiscardPile);
-        console.log(cardOnDiscardPile);
         for (let i = gamePromptSection.children.length-1; i > 0; i--) {
             if (gamePromptSection.children[i].tagName === "BUTTON") {
                 gamePromptSection.children[i].remove();
@@ -529,12 +532,10 @@ function createButtons() {
         }
         return;
     });
-    console.log(cardOnDiscardPile);
 }
 
 function unoChecker() {
-    //need to fix this
-    if (player1Turn === true && player2Turn === false) {
+    if (player1Turn === false && player2Turn === true) {
         if (player1Cards.length > 1) {
             document.querySelector(".newGamePrompt").remove();
             let newGamePrompt = document.createElement("div");
@@ -545,7 +546,8 @@ function unoChecker() {
                 player1Cards.push(drawCard());
                 addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
             }
-            unoCounter = false;
+            setDisplay(false, true);
+            unoCounterPlayer1 = false;
         }
         else if (player1Cards.length === 1) {
             document.querySelector(".newGamePrompt").remove();
@@ -553,11 +555,13 @@ function unoChecker() {
             newGamePrompt.innerHTML = `Uno! Player 1 has only one card left!`;
             gamePromptSection.appendChild(newGamePrompt);
             newGamePrompt.classList.add("newGamePrompt");
-            unoCounter  = true;
+            unoCounterPlayer1  = true;
+            player1CardsInHand.classList.remove("player1Hand");
+            player1CardsInHand.classList.add("unoAlert");
         }
         return;
     }
-    else if (player1Turn === false && player2Turn === true) {
+    else if (player1Turn === true && player2Turn === false) {
         if (player2Cards.length > 1) {
             document.querySelector(".newGamePrompt").remove();
             let newGamePrompt = document.createElement("div");
@@ -568,7 +572,9 @@ function unoChecker() {
                 player2Cards.push(drawCard());
                 addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
             }
-            noCounter = false;
+
+            setDisplay(true, false);
+            unoCounterPlayer2 = false;
         }
         else if (player2Cards.length === 1) {
             document.querySelector(".newGamePrompt").remove();
@@ -576,14 +582,16 @@ function unoChecker() {
             newGamePrompt.innerHTML = `Uno! Player 2 has only one card left!`;
             gamePromptSection.appendChild(newGamePrompt);
             newGamePrompt.classList.add("newGamePrompt");
-            unoCounter  = true;
+            unoCounterPlayer2  = true;
+            player2CardsInHand.classList.remove("player2Hand");
+            player2CardsInHand.classList.add("unoAlert");
         }
         return;
     }
 }
 
 function unoOppPlayerCallChecker() {
-    if (player1Turn === true && player2Turn === false && unoCounter === true && player2Cards.length === 1) {
+    if (player1Turn === true && player2Turn === false && unoCounterPlayer2 === true && player2Cards.length === 1) {
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Uno was called correctly by opposing player. 4 cards added to the player for incorrectly accusing other player!`;
@@ -593,9 +601,10 @@ function unoOppPlayerCallChecker() {
             player1Cards.push(drawCard());
             addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
         }
+        setDisplay(true, false);
         return;
     }
-    else if (player1Turn === true && player2Turn === false && unoCounter === false && player2Cards.length === 1) {
+    else if (player1Turn === true && player2Turn === false && unoCounterPlayer2 === false && player2Cards.length === 1) {
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Opposing player forgot to call Uno when they had 1 card left! 4 cards added to player 2!`;
@@ -605,9 +614,10 @@ function unoOppPlayerCallChecker() {
             player2Cards.push(drawCard());
             addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
         }
+        setDisplay(true, false);
         return;
     }
-    else if (player1Turn === true && player2Turn === false && unoCounter === false && player2Cards.length != 1) {
+    else if (player1Turn === true && player2Turn === false && unoCounterPlayer2 === false && player2Cards.length > 1) {
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Opposing player did not call Uno as they still have more than 1 card in their hand! 4 cards added to player 1 for incorrectly calling Uno!`;
@@ -617,9 +627,10 @@ function unoOppPlayerCallChecker() {
             player1Cards.push(drawCard());
             addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
         }
+        setDisplay(true, false);
         return;
     }
-    else if (player2Turn === true && player1Turn === false && unoCounter === true && player1Cards.length === 1) {
+    else if (player2Turn === true && player1Turn === false && unoCounterPlayer1 === true && player1Cards.length === 1) {
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Uno was called correctly by opposing player. 4 cards added to the player for incorrectly accusing other player!`;
@@ -629,9 +640,10 @@ function unoOppPlayerCallChecker() {
             player2Cards.push(drawCard());
             addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
         }
+        setDisplay(false, true);
         return;
     }
-    else if (player2Turn === true && player1Turn === false && unoCounter === false && player1Cards.length === 1) {
+    else if (player2Turn === true && player1Turn === false && unoCounterPlayer1 === false && player1Cards.length === 1) {
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Opposing player forgot to call Uno when they had 1 card left! 4 cards added to player 1!`;
@@ -641,9 +653,10 @@ function unoOppPlayerCallChecker() {
             player1Cards.push(drawCard());
             addCardToPlayer1(player1Cards[player1Cards.length-1], cardOnDiscardPile);
         }
+        setDisplay(false, true);
         return;
     }
-    else if (player2Turn === true && player1Turn === false && unoCounter === false && player1Cards.length != 1) {
+    else if (player2Turn === true && player1Turn === false && unoCounterPlayer1 === false && player1Cards.length > 1) {
         document.querySelector(".newGamePrompt").remove();
         let newGamePrompt = document.createElement("div");
         newGamePrompt.innerHTML = `Opposing player did not call Uno as they still have more than 1 card in their hand! 4 cards added to player 2 for incorrectly calling Uno!`;
@@ -653,6 +666,7 @@ function unoOppPlayerCallChecker() {
             player2Cards.push(drawCard());
             addCardToPlayer2(player2Cards[player2Cards.length-1], cardOnDiscardPile);
         }
+        setDisplay(false, true);
         return;
     }
 }
@@ -667,7 +681,27 @@ function postGameInstructions() {
 }
 
 function checkForWinner() {
-    //invoke either at end of discardedCard function or after endTurn function
+    if (player1Cards.length === 0) {
+        for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
+            gamePromptsDisplayed[i].style.display = "none";
+        }
+    let newGamePrompt = document.createElement("div");
+    newGamePrompt.innerHTML = `Player 1 has no more cards in their hand; Player 1 is the winner!`;
+    gamePromptSection.appendChild(newGamePrompt);
+    newGamePrompt.classList.add("newGamePrompt");   
+    return true; 
+    }
+    else if (player2Cards.length === 0) {
+        for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
+            gamePromptsDisplayed[i].style.display = "none";
+        }
+    let newGamePrompt = document.createElement("div");
+    newGamePrompt.innerHTML = `Player 2 has no more cards in their hand; Player 2 is the winner!`;
+    gamePromptSection.appendChild(newGamePrompt);
+    newGamePrompt.classList.add("newGamePrompt");
+    return true;    
+    }
+    return false;
 }
 
 //Event Listeners

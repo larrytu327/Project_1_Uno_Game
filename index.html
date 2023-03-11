@@ -9,7 +9,7 @@
     <title>Uno Game (2 Person)</title>
 </head>
 <body>
-    <section id="title">Uno Game (2 Person)</section>
+    <section id="title">Uno Game (2 Player)</section>
     <main>
         <section id="sidebar">
             <div id="gameStats">Game Stats</div>
@@ -23,13 +23,16 @@
             <button class="endTurnButton sidebarButtons">End Turn</button>
         </section>
         <section id="gameBoard">
-            <div id="player1Hand"></div>
+            <div class="player1Hand"></div>
             <div id="cardPile">
-                <div class="cards deckCards">Card Deck (click to draw a card)</div>
+                <div class = deckCardsColumn>
+                    <div class="deckCards"></div>
+                    <div class="deckCardsCaption">Card Deck (click to draw a card)</div>
+                </div>
                 <div class="cards discardPileCard">
                 </div>
             </div>
-            <div id="player2Hand"></div>
+            <div class="player2Hand"></div>
         </section>
         <section id="gamePrompts">Game Prompts
             <div class="newGamePrompt">Welcome to Uno! Press "Start Game" when Player 1 is ready!"</div>
