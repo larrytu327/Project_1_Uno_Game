@@ -101,16 +101,19 @@ function addCardToHand() {
 }
 
 function dealCardsAtStart() {
+    for (let i = gamePromptsDisplayed.length-1; i >= 0; i--) {
+        gamePromptsDisplayed[i].style.display = "none";
+    }
+    let newGamePrompt = document.createElement("div");
+    newGamePrompt.innerHTML = `Player 1, select a card to play/discard or draw a card from the card deck if unable to discard a card.`;
+    gamePromptSection.appendChild(newGamePrompt);
+    newGamePrompt.classList.add("newGamePrompt");
     for (let i = player1CardsInHand.children.length-1; i >= 0; i--) {
         player1CardsInHand.children[i].remove();
     }
     for (let i = player2CardsInHand.children.length-1; i >= 0; i--) {
         player2CardsInHand.children[i].remove();
     }
-    player1Cards = [];
-    player2Cards = [];
-    cardOnDiscardPile = [];
-    deck = [];
     createDeckOfCards();
     createWildCards();
     cardOnDiscardPile = drawCard();
